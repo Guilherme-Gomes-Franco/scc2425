@@ -20,7 +20,7 @@ import tukano.api.Result;
 import utils.Hash;
 import utils.IO;
 
-public class FilesystemStorage implements BlobStorage {
+public class FilesystemStorage implements tukano.impl.storage.BlobStorage {
 	private final String rootDir;
 	private static final int CHUNK_SIZE = 4096;
 	private static final String DEFAULT_ROOT_DIR = "/tmp/";
