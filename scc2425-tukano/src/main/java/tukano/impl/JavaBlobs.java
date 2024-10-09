@@ -7,6 +7,7 @@ import static tukano.api.Result.ErrorCode.FORBIDDEN;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import main.java.tukano.impl.storage.AzureBlobStorage;
 import tukano.api.Blobs;
 import tukano.api.Result;
 import tukano.impl.rest.TukanoRestServer;
@@ -30,7 +31,8 @@ public class JavaBlobs implements Blobs {
 	}
 	
 	private JavaBlobs() {
-		storage = new FilesystemStorage();
+		//storage = new FilesystemStorage();
+		storage = new AzureBlobStorage();
 		baseURI = String.format("%s/%s/", TukanoRestServer.serverURI, Blobs.NAME);
 	}
 	
