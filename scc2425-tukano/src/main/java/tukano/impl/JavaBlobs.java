@@ -77,10 +77,14 @@ public class JavaBlobs implements Blobs {
 	}
 	
 	private boolean validBlobId(String blobId, String token) {
-		return Token.isValid(token, blobId);
+		return Token.isValid(token, toURL(blobId));
 	}
 
 	private String toPath(String blobId) {
 		return blobId.replace("+", "/");
+	}
+
+	private String toURL( String blobId ) {
+		return baseURI + blobId ;
 	}
 }
