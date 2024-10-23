@@ -1,4 +1,4 @@
-package main.java.tukano.impl.storage;
+package tukano.impl.storage;
 
 import tukano.api.Result;
 
@@ -17,7 +17,6 @@ import static tukano.api.Result.ErrorCode.CONFLICT;
 import static tukano.api.Result.error;
 import static tukano.api.Result.ok;
 import utils.Hash;
-
 
 public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
     private static final String STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=scc2323;AccountKey=8gfHhcOfIAtd+mZkMcYCNwW1rLYHvKvimgfplN/0PWl4ceca+qjkBUWpwJoX4bln8eRk/Nq2431j+ASt9TXmRw==;EndpointSuffix=core.windows.net";
@@ -38,7 +37,7 @@ public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
 
         BlobClient blob = containerClient.getBlobClient(path);
 
-        //check if file exists in the container
+        // check if file exists in the container
         if (blob.exists()) {
             if (Arrays.equals(Hash.sha256(bytes), Hash.sha256(blob.downloadContent().toBytes())))
                 return ok();
@@ -71,7 +70,7 @@ public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
 
         BlobClient blob = containerClient.getBlobClient(path);
 
-        if( ! blob.exists() )
+        if (!blob.exists())
             return error(Result.ErrorCode.NOT_FOUND);
 
         System.out.println("READ>>>>" + path);
@@ -86,7 +85,7 @@ public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
 
         BlobClient blob = containerClient.getBlobClient(path);
 
-        if( ! blob.exists() )
+        if (!blob.exists())
             return error(Result.ErrorCode.NOT_FOUND);
 
         sink.accept(blob.downloadContent().toBytes());
