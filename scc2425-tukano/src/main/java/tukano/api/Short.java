@@ -7,15 +7,16 @@ import tukano.impl.Token;
 /**
  * Represents a Short video uploaded by an user.
  * 
- * A short has an unique shortId and is owned by a given user; 
+ * A short has an unique shortId and is owned by a given user;
  * Comprises of a short video, stored as a binary blob at some bloburl;.
- * A post also has a number of likes, which can increase or decrease over time. It is the only piece of information that is mutable.
+ * A post also has a number of likes, which can increase or decrease over time.
+ * It is the only piece of information that is mutable.
  * A short is timestamped when it is created.
  *
  */
 @Entity
 public class Short {
-	
+
 	@Id
 	String shortId;
 	String ownerId;
@@ -23,8 +24,9 @@ public class Short {
 	long timestamp;
 	int totalLikes;
 
-	public Short() {}
-	
+	public Short() {
+	}
+
 	public Short(String shortId, String ownerId, String blobUrl, long timestamp, int totalLikes) {
 		super();
 		this.shortId = shortId;
@@ -35,9 +37,29 @@ public class Short {
 	}
 
 	public Short(String shortId, String ownerId, String blobUrl) {
-		this( shortId, ownerId, blobUrl, System.currentTimeMillis(), 0);
+		this(shortId, ownerId, blobUrl, System.currentTimeMillis(), 0);
 	}
-	
+
+	private String _rid;
+
+	public String get_rid() {
+		return _rid;
+	}
+
+	public void set_rid(String _rid) {
+		this._rid = _rid;
+	}
+
+	public String get_ts() {
+		return _ts;
+	}
+
+	public void set_ts(String _ts) {
+		this._ts = _ts;
+	}
+
+	private String _ts;
+
 	public String getShortId() {
 		return shortId;
 	}
@@ -83,9 +105,9 @@ public class Short {
 		return "Short [shortId=" + shortId + ", ownerId=" + ownerId + ", blobUrl=" + blobUrl + ", timestamp="
 				+ timestamp + ", totalLikes=" + totalLikes + "]";
 	}
-	
-	public Short copyWithLikes_And_Token( long totLikes) {
+
+	public Short copyWithLikes_And_Token(long totLikes) {
 		var urlWithToken = String.format("%s?token=%s", blobUrl, Token.get(blobUrl));
-		return new Short( shortId, ownerId, urlWithToken, timestamp, (int)totLikes);
-	}	
+		return new Short(shortId, ownerId, urlWithToken, timestamp, (int) totLikes);
+	}
 }
