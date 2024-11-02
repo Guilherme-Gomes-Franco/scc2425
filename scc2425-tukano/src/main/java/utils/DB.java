@@ -47,13 +47,14 @@ public class DB {
 			return (Result<T>) CosmosDBLayer.getInstance().deleteOne(obj);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> Result<T> updateOne(T obj) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
 		if (usePostgres)
 			return CosmosDBPostgresLayer.getInstance().updateOne(obj);
 		else
-			return (Result<T>) CosmosDBLayer.getInstance().updateOne(obj);//TODO
+			return (Result<T>) CosmosDBLayer.getInstance().updateOne(obj);
 	}
 
 	public static <T> Result<T> insertOne(T obj) {
