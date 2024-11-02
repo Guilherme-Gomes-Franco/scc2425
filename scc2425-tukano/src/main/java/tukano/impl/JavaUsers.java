@@ -77,7 +77,6 @@ public class JavaUsers implements Users {
 			e.printStackTrace();
 		}
 		return res;
-
 	}
 
 	@Override

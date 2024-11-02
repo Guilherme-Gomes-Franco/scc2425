@@ -1,7 +1,9 @@
+package tukano.api;
+
 /**
  * Represents a Short, as stored in the database
  */
-public class ShortDAO extends Short {
+public class ShortDAO extends tukano.api.Short {
 	private String _rid;
 	public String get_rid() {
 		return _rid;

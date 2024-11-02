@@ -3,7 +3,7 @@ package tukano.api;
 /**
  * Represents a User, as stored in the database
  */
-public class UserDAO extends User {
+public class UserDAO extends tukano.api.User {
 	private String _rid;
 
 	public String get_rid() {
