@@ -1,4 +1,4 @@
-/*
+/**
  * package test;
  * 
  * import java.io.File;
@@ -93,7 +93,7 @@
  * // blobs.forEach( b -> {
  * // var r = b.download(blobId);
  * // System.out.println( Hex.of(Hash.sha256( bytes )) + "-->" +
- * Hex.of(Hash.sha256( r.value() )));
+ * // Hex.of(Hash.sha256( r.value() )));
  * //
  * // });
  * 
