@@ -14,27 +14,27 @@ public class DB {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
 		if (usePostgres)
-			return utils.CosmosDBPostgresLayer.getInstance().query(clazz, query);
+			return CosmosDBPostgresLayer.getInstance().query(clazz, query);
 		else
-			return utils.CosmosDBLayer.getInstance().query(clazz, query);
+			return CosmosDBLayer.getInstance().query(clazz, query);
 	}
 
 	public static <T> Result<List<T>> sql(Class<T> clazz, String fmt, Object... args) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
 		if (usePostgres)
-			return utils.CosmosDBPostgresLayer.getInstance().query(clazz, String.format(fmt, args));
+			return CosmosDBPostgresLayer.getInstance().query(clazz, String.format(fmt, args));
 		else
-			return utils.CosmosDBLayer.getInstance().query(clazz, String.format(fmt, args));
+			return CosmosDBLayer.getInstance().query(clazz, String.format(fmt, args));
 	}
 
 	public static <T> Result<T> getOne(String id, Class<T> clazz) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
 		if (usePostgres)
-			return utils.CosmosDBPostgresLayer.getInstance().getOne(id, clazz);
+			return CosmosDBPostgresLayer.getInstance().getOne(id, clazz);
 		else
-			return utils.CosmosDBLayer.getInstance().getOne(id, clazz);
+			return CosmosDBLayer.getInstance().getOne(id, clazz);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -42,27 +42,27 @@ public class DB {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
 		if (usePostgres)
-			return (Result<T>) utils.CosmosDBPostgresLayer.getInstance().deleteOne(obj);
+			return CosmosDBPostgresLayer.getInstance().deleteOne(obj);
 		else
-			return (Result<T>) utils.CosmosDBLayer.getInstance().deleteOne(obj);
+			return (Result<T>) CosmosDBLayer.getInstance().deleteOne(obj);
 	}
 
 	public static <T> Result<T> updateOne(T obj) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
 		if (usePostgres)
-			return utils.CosmosDBPostgresLayer.getInstance().updateOne(obj);
+			return CosmosDBPostgresLayer.getInstance().updateOne(obj);
 		else
-			return utils.CosmosDBLayer.getInstance().updateOne(obj);
+			return (Result<T>) CosmosDBLayer.getInstance().updateOne(obj);//TODO
 	}
 
 	public static <T> Result<T> insertOne(T obj) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
 		if (usePostgres)
-			return Result.errorOrValue(utils.CosmosDBPostgresLayer.getInstance().insertOne(obj), obj);
+			return Result.errorOrValue(CosmosDBPostgresLayer.getInstance().insertOne(obj), obj);
 		else
-			return Result.errorOrValue(utils.CosmosDBLayer.getInstance().insertOne(obj), obj);
+			return Result.errorOrValue(CosmosDBLayer.getInstance().insertOne(obj), obj);
 	}
 
 	public static <T> Result<T> transaction(Consumer<Session> c) {

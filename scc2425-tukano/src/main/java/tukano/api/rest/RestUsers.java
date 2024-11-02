@@ -22,6 +22,21 @@ public interface RestUsers {
 	String PWD = "pwd";
 	String QUERY = "query";
 	String USER_ID = "userId";
+
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+    default String version() {
+
+		var sb = new StringBuilder("<html>");
+
+		sb.append("<p>version: 0001</p>");
+
+		System.getProperties().forEach( (k,v) -> {
+			sb.append("<p><pre>").append(k).append("  =  ").append( v ).append("</pre></p>");
+		});
+		sb.append("</hmtl>");
+		return sb.toString();
+	}
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

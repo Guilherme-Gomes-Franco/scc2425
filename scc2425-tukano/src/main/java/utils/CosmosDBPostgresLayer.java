@@ -76,7 +76,7 @@ public class CosmosDBPostgresLayer {
 		});
 	}
 
-	public <T> Result<Boolean> deleteOne(T obj) {
+	public <T> Result<T> deleteOne(T obj) {
 		String deleteQuery;
 		String id;
 		if (obj instanceof UserDAO) {
@@ -92,8 +92,8 @@ public class CosmosDBPostgresLayer {
 		return tryCatch(() -> {
 			try (PreparedStatement stmt = connection.prepareStatement(deleteQuery)) {
 				stmt.setString(1, id);
-                int rowsAffected = stmt.executeUpdate();
-				return rowsAffected > 0;
+                stmt.executeUpdate();
+				return obj;
 			} catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -141,7 +141,7 @@ public class CosmosDBPostgresLayer {
 		}
 	}
 
-	public <T> Result<Boolean> insertOne(T obj) {
+	public <T> Result<T> insertOne(T obj) {
 		if(obj instanceof UserDAO){
 			UserDAO user = (UserDAO) obj;
 			String insertQuery = "INSERT INTO users (userId, pwd, email, displayName, _rid, _ts) VALUES (?, ?, ?, ?, ?, ?)";
@@ -154,8 +154,8 @@ public class CosmosDBPostgresLayer {
 					stmt.setString(4, user.getDisplayName());
 					stmt.setString(5, user.get_rid());
 					stmt.setString(6, user.get_ts());
-					int rowsAffected = stmt.executeUpdate();
-					return rowsAffected > 0;
+					stmt.executeUpdate();
+					return obj;
 				} catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -173,8 +173,8 @@ public class CosmosDBPostgresLayer {
 					stmt.setString(5, String.valueOf(s.getTotalLikes()));
 					stmt.setString(6, s.get_rid());
 					stmt.setString(7, s.get_ts());
-					int rowsAffected = stmt.executeUpdate();
-					return rowsAffected > 0;
+					stmt.executeUpdate();
+					return obj;
 				} catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

@@ -12,8 +12,7 @@ public class User {
 	private String email;
 	private String displayName;
 
-	public User() {
-	}
+	public User() {}
 
 	public User(String userId, String pwd, String email, String displayName) {
 		this.pwd = pwd;

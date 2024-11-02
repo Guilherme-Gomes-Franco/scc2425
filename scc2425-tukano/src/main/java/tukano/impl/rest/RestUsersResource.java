@@ -15,7 +15,7 @@ public class RestUsersResource extends RestResource implements RestUsers {
 	public RestUsersResource() {
 		this.impl = JavaUsers.getInstance();
 	}
-	
+
 	@Override
 	public String createUser(User user) {
 		return super.resultOrThrow( impl.createUser( user));
