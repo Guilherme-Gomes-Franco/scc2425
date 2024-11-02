@@ -27,7 +27,7 @@ public class ShortDAO extends tukano.api.Short {
 
 	private String _ts;
 
-	public shortDAO() {
+	public ShortDAO() {
 	}
 	
 	

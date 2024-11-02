@@ -76,12 +76,15 @@ public class CosmosDBPostgresLayer {
 		});
 	}
 
-	public <T> Result<Boolean> deleteOne(String id, Class<T> clazz) {
+	public <T> Result<Boolean> deleteOne(T obj) {
 		String deleteQuery;
-		if (clazz == UserDAO.class) {
+		String id;
+		if (obj instanceof UserDAO) {
 			deleteQuery = "DELETE FROM users WHERE userId = ?";
-		} else if (clazz == ShortDAO.class) {
+			id = ((UserDAO) obj).getUserId();
+		} else if (obj instanceof ShortDAO) {
 			deleteQuery = "DELETE FROM shorts WHERE shortId = ?";
+			id = ((ShortDAO) obj).getShortId();
 		} else {
 			return Result.error(ErrorCode.NOT_FOUND);
 		}
