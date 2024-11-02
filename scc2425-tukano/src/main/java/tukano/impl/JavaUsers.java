@@ -46,6 +46,8 @@ public class JavaUsers implements Users {
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (res.isOK())
 				jedis.set(user.getUserId(), JSON.encode(user));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return res;
 	}
@@ -58,9 +60,10 @@ public class JavaUsers implements Users {
 			return error(BAD_REQUEST);
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
-			var user = JSON.decode(jedis.get(userId), User.class);
-			if (user != null)
+			if (jedis.exists(userId)) {
+				var user = JSON.decode(jedis.get(userId), User.class);
 				return validatedUserOrError(Result.ok(user), pwd);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -74,6 +77,7 @@ public class JavaUsers implements Users {
 			e.printStackTrace();
 		}
 		return res;
+
 	}
 
 	@Override
@@ -82,6 +86,28 @@ public class JavaUsers implements Users {
 
 		if (badUpdateUserInfo(userId, pwd, other))
 			return error(BAD_REQUEST);
+
+		try (var jedis = RedisCache.getCachePool().getResource()) {
+			if (jedis.exists(userId)) {
+				var user = JSON.decode(jedis.get(userId), User.class);
+				Result<User> permitted_change = validatedUserOrError(ok(user), pwd);
+				if (permitted_change.isOK()) {
+					jedis.set(userId, JSON.encode(user.updateFrom(other)));
+					Result<User> res = ok(other);
+
+					// Updates the DB asynchronously
+					Executors.defaultThreadFactory().newThread(() -> {
+						DB.updateOne(user.updateFrom(other));
+					}).start();
+
+					return res;
+				} else {
+					return error(permitted_change.error());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return errorOrResult(validatedUserOrError(DB.getOne(userId, User.class), pwd),
 				user -> DB.updateOne(user.updateFrom(other)));
@@ -93,6 +119,31 @@ public class JavaUsers implements Users {
 
 		if (userId == null || pwd == null)
 			return error(BAD_REQUEST);
+
+		try (var jedis = RedisCache.getCachePool().getResource()) {
+			if (jedis.exists(userId)) {
+				var user = JSON.decode(jedis.get(userId), User.class);
+				Result<User> permitted_change = validatedUserOrError(ok(user), pwd);
+
+				if (permitted_change.isOK()) {
+					// Delete user shorts and related info, and the user from the DB asynchronously
+					// in a separate thread
+					Executors.defaultThreadFactory().newThread(() -> {
+						JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
+						JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
+						DB.deleteOne(user);
+					}).start();
+
+					jedis.del(userId);
+					return ok(user);
+				} else {
+					return error(permitted_change.error());
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return errorOrResult(validatedUserOrError(DB.getOne(userId, User.class), pwd), user -> {
 
@@ -110,13 +161,25 @@ public class JavaUsers implements Users {
 	public Result<List<User>> searchUsers(String pattern) {
 		Log.info(() -> format("searchUsers : patterns = %s\n", pattern));
 
+		try (var jedis = RedisCache.getCachePool().getResource()) {
+			var hits = getHits(pattern);
+
+			return ok(hits);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		var hits = getHits(pattern);
+		return ok(hits);
+	}
+
+	private List<User> getHits(String pattern) {
 		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
 		var hits = DB.sql(query, User.class).value()
 				.stream()
 				.map(User::copyWithoutPassword)
 				.toList();
-
-		return ok(hits);
+		return hits;
 	}
 
 	private Result<User> validatedUserOrError(Result<User> res, String pwd) {
