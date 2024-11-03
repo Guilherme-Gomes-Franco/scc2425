@@ -12,6 +12,7 @@ import static utils.DB.getOne;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import redis.clients.jedis.params.GetExParams;
@@ -74,18 +75,22 @@ public class JavaShorts implements Shorts {
 		if (shortId == null)
 			return error(BAD_REQUEST);
 		GetExParams exParams = new GetExParams();
+		var query = format("SELECT count(*) FROM Likes l WHERE l.shortId = '%s'", shortId);
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
-			if (jedis.exists(shortId) & jedis.exists(LIKES_KEY + shortId)) {
+			if (jedis.exists(shortId)) {
 				Short shrt = JSON.decode(jedis.getEx(shortId, exParams.ex(100)), Short.class);
-				String likes = jedis.getEx(LIKES_KEY + shortId, exParams.ex(100));
-				return ok(shrt.copyWithLikes_And_Token(Integer.parseInt(likes)));
+				if (jedis.exists(LIKES_KEY + shortId)) {
+					String likes = jedis.getEx(LIKES_KEY + shortId, exParams.ex(100));
+					return ok(shrt.copyWithLikes_And_Token(Integer.parseInt(likes)));
+				} else {
+					var likes = DB.sql(query, Long.class);
+					return ok(shrt.copyWithLikes_And_Token(likes.value().get(0)));
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		var query = format("SELECT count(*) FROM Likes l WHERE l.shortId = '%s'", shortId);
 		var likes = DB.sql(query, Long.class);
 		return errorOrValue(getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.value().get(0)));
 
@@ -98,8 +103,13 @@ public class JavaShorts implements Shorts {
 		return errorOrResult(getShort(shortId), shrt -> {
 
 			return errorOrResult(okUser(shrt.getOwnerId(), password), user -> {
+				try (var jedis = RedisCache.getCachePool().getResource()) {
+					jedis.del(shortId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				return DB.transaction(dbSession -> {
-					dbSession.remove(shrt);
+                    dbSession.remove(shrt);
 
 					String query = String.format("DELETE FROM Likes l WHERE l.shortId = '%s'", shortId);
 					dbSession.executeUpdate(query, Likes.class);
@@ -138,14 +148,13 @@ public class JavaShorts implements Shorts {
 	}
 
 	@Override
-	// Meter o Like a incrementar a cache com o id LIKES_KEY + shortId
 	public Result<Void> like(String shortId, String userId, boolean isLiked, String password) {
 		Log.info(() -> format("like : shortId = %s, userId = %s, isLiked = %s, pwd = %s\n", shortId, userId, isLiked,
 				password));
 
 		return errorOrResult(getShort(shortId), shrt -> {
 			var l = new Likes(userId, shortId, shrt.getOwnerId());
-			return errorOrVoid(okUser(userId, password), isLiked ? DB.insertOne(l) : DB.deleteOne(l));
+			return errorOrVoid(okUser(userId, password), isLiked ? addLike(l, shrt) : removeLike(l, shrt));
 		});
 	}
 
@@ -210,6 +219,39 @@ public class JavaShorts implements Shorts {
 			dbSession.executeUpdate(query3, Short.class);
 
 		});
+
+	}
+
+	private Result<Likes> addLike(Likes l, Short shrt) {
+		try (var jedis = RedisCache.getCachePool().getResource()) {
+			var key = LIKES_KEY + l.getShortId();
+			if (jedis.exists(key)) {
+				jedis.incr(key);
+			} else {
+				int tot = shrt.getTotalLikes();
+				jedis.setex(key, 100, String.valueOf(tot + 1));
+			}
+			Executors.defaultThreadFactory().newThread(() -> {
+				DB.insertOne(l);
+			}).start();
+		}
+		return ok(l);
+	}
+
+	private Result<Likes> removeLike(Likes l, Short shrt) {
+		try (var jedis = RedisCache.getCachePool().getResource()) {
+			var key = LIKES_KEY + l.getShortId();
+			if (jedis.exists(key)) {
+				jedis.decr(key);
+			} else {
+				int tot = shrt.getTotalLikes();
+				jedis.setex(key, 100, String.valueOf(tot - 1));
+			}
+			Executors.defaultThreadFactory().newThread(() -> {
+				DB.deleteOne(l);
+			}).start();
+		}
+		return ok(l);
 	}
 
 }
