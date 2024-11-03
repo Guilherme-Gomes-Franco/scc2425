@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import redis.clients.jedis.params.GetExParams;
 import tukano.api.Result;
 import tukano.api.User;
 import tukano.api.Users;
@@ -45,7 +46,7 @@ public class JavaUsers implements Users {
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (res.isOK())
-				jedis.set(user.getUserId(), JSON.encode(user));
+				jedis.setex(user.getUserId(), 10, JSON.encode(user));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -55,13 +56,14 @@ public class JavaUsers implements Users {
 	@Override
 	public Result<User> getUser(String userId, String pwd) {
 		Log.info(() -> format("getUser : userId = %s, pwd = %s\n", userId, pwd));
+		GetExParams exParams = new GetExParams();
 
 		if (userId == null)
 			return error(BAD_REQUEST);
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(userId)) {
-				var user = JSON.decode(jedis.get(userId), User.class);
+				User user = JSON.decode(jedis.getEx(userId, exParams.ex(10)), User.class);
 				return validatedUserOrError(Result.ok(user), pwd);
 			}
 		} catch (Exception e) {
@@ -71,7 +73,7 @@ public class JavaUsers implements Users {
 		try {
 			if (res.isOK()) {
 				var jedis = RedisCache.getCachePool().getResource();
-				jedis.set(userId, JSON.encode(res.value()));
+				jedis.setex(userId, 10, JSON.encode(res.value()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -91,7 +93,7 @@ public class JavaUsers implements Users {
 				var user = JSON.decode(jedis.get(userId), User.class);
 				Result<User> permitted_change = validatedUserOrError(ok(user), pwd);
 				if (permitted_change.isOK()) {
-					jedis.set(userId, JSON.encode(user.updateFrom(other)));
+					jedis.setex(userId, 10, JSON.encode(user.updateFrom(other)));
 					Result<User> res = ok(other);
 
 					// Updates the DB asynchronously
@@ -159,26 +161,12 @@ public class JavaUsers implements Users {
 	@Override
 	public Result<List<User>> searchUsers(String pattern) {
 		Log.info(() -> format("searchUsers : patterns = %s\n", pattern));
-
-		try (var jedis = RedisCache.getCachePool().getResource()) {
-			var hits = getHits(pattern);
-
-			return ok(hits);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		var hits = getHits(pattern);
-		return ok(hits);
-	}
-
-	private List<User> getHits(String pattern) {
 		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
 		var hits = DB.sql(query, User.class).value()
 				.stream()
 				.map(User::copyWithoutPassword)
 				.toList();
-		return hits;
+		return ok(hits);
 	}
 
 	private Result<User> validatedUserOrError(Result<User> res, String pwd) {
