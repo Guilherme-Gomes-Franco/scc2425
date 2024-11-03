@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import javax.print.DocFlavor.STRING;
-
 import redis.clients.jedis.params.GetExParams;
 import tukano.api.Blobs;
 import tukano.api.Result;
@@ -24,7 +22,7 @@ import tukano.api.Shorts;
 import tukano.api.User;
 import tukano.impl.data.Following;
 import tukano.impl.data.Likes;
-import tukano.impl.rest.TukanoRestServer;
+import tukano.impl.rest.TukanoRestApplication;
 import utils.DB;
 import utils.JSON;
 import utils.RedisCache;
@@ -53,7 +51,7 @@ public class JavaShorts implements Shorts {
 		return errorOrResult(okUser(userId, password), user -> {
 
 			var shortId = format("%s+%s", userId, UUID.randomUUID());
-			var blobUrl = format("%s/%s/%s", TukanoRestServer.serverURI, Blobs.NAME, shortId);
+			var blobUrl = format("%s/%s/%s", TukanoRestApplication.serverURI, Blobs.NAME, shortId);
 			var shrt = new Short(shortId, userId, blobUrl);
 
 			Result<Short> res = errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));

@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.HashSet;
 import utils.IP;
 
-public class TukanoRestServer extends Application {
+public class TukanoRestApplication extends Application {
 
 	static String SERVER_BASE_URI = "http://%s:%s/rest";
 	public static String serverURI;
@@ -15,12 +15,13 @@ public class TukanoRestServer extends Application {
 	private Set<Object> singletons = new HashSet<>();
 	private Set<Class<?>> resources = new HashSet<>();
 
-	public TukanoRestServer() {
+	public TukanoRestApplication() {
 		serverURI = String.format(SERVER_BASE_URI, 	IP.hostname(), PORT);
 
 		resources.add(RestBlobsResource.class);
 		resources.add(RestShortsResource.class);
 		resources.add(RestUsersResource.class);
+		resources.add(TestResource.class);
 		singletons.add(new RestBlobsResource());
 		singletons.add(new RestShortsResource());
 		singletons.add(new RestUsersResource());

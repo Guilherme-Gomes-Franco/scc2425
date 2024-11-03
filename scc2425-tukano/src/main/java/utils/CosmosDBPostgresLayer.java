@@ -5,11 +5,12 @@ import java.sql.*;
 import tukano.api.Result;
 import tukano.api.Result.ErrorCode;
 import tukano.api.User;
-import tukano.api.ShortDAO;
+import tukano.api.Short;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+
 
 public class CosmosDBPostgresLayer {
 
@@ -55,7 +56,7 @@ public class CosmosDBPostgresLayer {
 		String queryStr;
 		if (clazz == User.class) {
 			queryStr = "SELECT * FROM users WHERE userId = ?";
-		} else if (clazz == ShortDAO.class) {
+		} else if (clazz == Short.class) {
 			queryStr = "SELECT * FROM shorts WHERE shortId = ?";
 		} else {
 			return Result.error(ErrorCode.NOT_FOUND);
@@ -82,9 +83,9 @@ public class CosmosDBPostgresLayer {
 		if (obj instanceof User) {
 			deleteQuery = "DELETE FROM users WHERE userId = ?";
 			id = ((User) obj).getUserId();
-		} else if (obj instanceof ShortDAO) {
+		} else if (obj instanceof Short) {
 			deleteQuery = "DELETE FROM shorts WHERE shortId = ?";
-			id = ((ShortDAO) obj).getShortId();
+			id = ((Short) obj).getShortId();
 		} else {
 			return Result.error(ErrorCode.NOT_FOUND);
 		}
@@ -115,11 +116,11 @@ public class CosmosDBPostgresLayer {
 					stmt.executeUpdate();
 					return obj;
 				} catch (SQLException e) {
-					throw new RuntimeException(e);
-				}
-			});
-		} else if (obj instanceof ShortDAO) {
-			ShortDAO s = (ShortDAO) obj;
+                    throw new RuntimeException(e);
+                }
+            });
+		} else if (obj instanceof Short) {
+			Short s = (Short) obj;
 			String updateQuery = "UPDATE shorts SET ownerID = ?, blobUrl = ?, timestamp = ?, totalLikes = ?, _rid = ?, _ts = ? WHERE shortId = ?";
 			return tryCatch(() -> {
 				try (PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
@@ -133,9 +134,9 @@ public class CosmosDBPostgresLayer {
 					stmt.executeUpdate();
 					return obj;
 				} catch (SQLException e) {
-					throw new RuntimeException(e);
-				}
-			});
+                    throw new RuntimeException(e);
+                }
+            });
 		} else {
 			return Result.error(ErrorCode.NOT_FOUND);
 		}
@@ -157,15 +158,15 @@ public class CosmosDBPostgresLayer {
 					stmt.executeUpdate();
 					return obj;
 				} catch (SQLException e) {
-					throw new RuntimeException(e);
-				}
-			});
+                    throw new RuntimeException(e);
+                }
+            });
 		}
-		if (obj instanceof ShortDAO) {
-			ShortDAO s = (ShortDAO) obj;
+		if(obj instanceof Short){
+			Short s = (Short) obj;
 			String insertQuery = "INSERT INTO shorts (shortId, ownerID, blobUrl, timestamp, totalLikes, _rid, _ts) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			return tryCatch(() -> {
-				try (PreparedStatement stmt = connection.prepareStatement(insertQuery)) {
+				try (PreparedStatement stmt = connection.prepareStatement(insertQuery)){
 					stmt.setString(1, s.getShortId());
 					stmt.setString(2, s.getOwnerId());
 					stmt.setString(3, s.getBlobUrl());
@@ -185,28 +186,28 @@ public class CosmosDBPostgresLayer {
 
 	public <T> Result<List<T>> query(Class<T> clazz, String queryStr) {
 		return tryCatch(() -> {
-			try {
+            try {
 				List<T> resultList = new ArrayList<>();
-				Statement statement = connection.createStatement();
+                Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(queryStr);
 				while (resultSet.next()) {
 					T instance = clazz.getConstructor(resultSet.getClass()).newInstance(resultSet);
 					resultList.add(instance);
 				}
 				return resultList;
-			} catch (Exception e) {
+            } catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		});
+        });
 	}
-
-	<T> Result<T> tryCatch(Supplier<T> supplierFunc) {
+	
+	<T> Result<T> tryCatch( Supplier<T> supplierFunc) {
 		try {
 			init();
 			return Result.ok(supplierFunc.get());
-		} catch (Exception x) {
+		} catch( Exception x ) {
 			x.printStackTrace();
-			return Result.error(ErrorCode.INTERNAL_ERROR);
+			return Result.error( ErrorCode.INTERNAL_ERROR);						
 		}
 	}
 
@@ -223,7 +224,7 @@ public class CosmosDBPostgresLayer {
 /*
  * drop table shorts;
  * drop table users;
- * 
+ *
  * create table users (
  * userId VARCHAR(255) not null primary key,
  * pwd VARCHAR(255) not null,
@@ -232,7 +233,7 @@ public class CosmosDBPostgresLayer {
  * _rid VARCHAR(255),
  * _ts VARCHAR(255)
  * );
- * 
+ *
  * create table shorts (
  * shortId VARCHAR(255) not null primary key,
  * ownerId VARCHAR(255) references users (userId),

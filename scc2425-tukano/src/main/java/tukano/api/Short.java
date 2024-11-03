@@ -23,6 +23,8 @@ public class Short {
 	String blobUrl;
 	long timestamp;
 	int totalLikes;
+	private String _rid;
+	private String _ts;
 
 	public Short() {
 	}
@@ -40,28 +42,26 @@ public class Short {
 		this(shortId, ownerId, blobUrl, System.currentTimeMillis(), 0);
 	}
 
-	private String _rid;
-
-	public String get_rid() {
-		return _rid;
-	}
 
 	public void set_rid(String _rid) {
 		this._rid = _rid;
-	}
-
-	public String get_ts() {
-		return _ts;
 	}
 
 	public void set_ts(String _ts) {
 		this._ts = _ts;
 	}
 
-	private String _ts;
 
 	public String getShortId() {
 		return shortId;
+	}
+
+	public String get_rid() {
+		return _rid;
+	}
+
+	public String get_ts() {
+		return _ts;
 	}
 
 	public void setShortId(String shortId) {
