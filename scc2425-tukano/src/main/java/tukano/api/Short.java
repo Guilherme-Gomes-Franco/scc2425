@@ -28,7 +28,6 @@ public class Short {
 	private String id;
 
 	public Short() {
-		this.id = shortId;
 	}
 
 	public Short(String shortId, String ownerId, String blobUrl, long timestamp, int totalLikes) {

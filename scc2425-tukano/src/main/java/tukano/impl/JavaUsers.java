@@ -42,6 +42,8 @@ public class JavaUsers implements Users {
 		if (badUserInfo(user))
 			return error(BAD_REQUEST);
 
+		user.setId(user.getUserId());
+
 		Result<String> res = errorOrValue(DB.insertOne(user), user.getUserId());
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {

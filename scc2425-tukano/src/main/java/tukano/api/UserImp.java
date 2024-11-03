@@ -14,7 +14,6 @@ public class UserImp {
 	private String id;
 
 	public UserImp() {
-		this.id = userId;
 	}
 
 	public UserImp(String userId, String pwd, String email, String displayName) {
