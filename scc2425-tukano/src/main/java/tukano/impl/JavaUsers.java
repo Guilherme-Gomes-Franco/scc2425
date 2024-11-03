@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import redis.clients.jedis.params.GetExParams;
 import tukano.api.Result;
-import tukano.api.User;
+import tukano.api.UserImp;
 import tukano.api.Users;
 import utils.DB;
 import utils.JSON;
@@ -36,7 +36,7 @@ public class JavaUsers implements Users {
 	}
 
 	@Override
-	public Result<String> createUser(User user) {
+	public Result<String> createUser(UserImp user) {
 		Log.info(() -> format("createUser : %s\n", user));
 
 		if (badUserInfo(user))
@@ -54,7 +54,7 @@ public class JavaUsers implements Users {
 	}
 
 	@Override
-	public Result<User> getUser(String userId, String pwd) {
+	public Result<UserImp> getUser(String userId, String pwd) {
 		Log.info(() -> format("getUser : userId = %s, pwd = %s\n", userId, pwd));
 		GetExParams exParams = new GetExParams();
 
@@ -63,13 +63,13 @@ public class JavaUsers implements Users {
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(userId)) {
-				User user = JSON.decode(jedis.getEx(userId, exParams.ex(10)), User.class);
+				UserImp user = JSON.decode(jedis.getEx(userId, exParams.ex(10)), UserImp.class);
 				return validatedUserOrError(Result.ok(user), pwd);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Result<User> res = validatedUserOrError(DB.getOne(userId, User.class), pwd);
+		Result<UserImp> res = validatedUserOrError(DB.getOne(userId, UserImp.class), pwd);
 		try {
 			if (res.isOK()) {
 				var jedis = RedisCache.getCachePool().getResource();
@@ -82,7 +82,7 @@ public class JavaUsers implements Users {
 	}
 
 	@Override
-	public Result<User> updateUser(String userId, String pwd, User other) {
+	public Result<UserImp> updateUser(String userId, String pwd, UserImp other) {
 		Log.info(() -> format("updateUser : userId = %s, pwd = %s, user: %s\n", userId, pwd, other));
 
 		if (badUpdateUserInfo(userId, pwd, other))
@@ -90,11 +90,11 @@ public class JavaUsers implements Users {
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(userId)) {
-				var user = JSON.decode(jedis.get(userId), User.class);
-				Result<User> permitted_change = validatedUserOrError(ok(user), pwd);
+				var user = JSON.decode(jedis.get(userId), UserImp.class);
+				Result<UserImp> permitted_change = validatedUserOrError(ok(user), pwd);
 				if (permitted_change.isOK()) {
 					jedis.setex(userId, 10, JSON.encode(user.updateFrom(other)));
-					Result<User> res = ok(other);
+					Result<UserImp> res = ok(other);
 
 					// Updates the DB asynchronously
 					Executors.defaultThreadFactory().newThread(() -> {
@@ -110,12 +110,12 @@ public class JavaUsers implements Users {
 			e.printStackTrace();
 		}
 
-		return errorOrResult(validatedUserOrError(DB.getOne(userId, User.class), pwd),
+		return errorOrResult(validatedUserOrError(DB.getOne(userId, UserImp.class), pwd),
 				user -> DB.updateOne(user.updateFrom(other)));
 	}
 
 	@Override
-	public Result<User> deleteUser(String userId, String pwd) {
+	public Result<UserImp> deleteUser(String userId, String pwd) {
 		Log.info(() -> format("deleteUser : userId = %s, pwd = %s\n", userId, pwd));
 
 		if (userId == null || pwd == null)
@@ -123,8 +123,8 @@ public class JavaUsers implements Users {
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(userId)) {
-				var user = JSON.decode(jedis.get(userId), User.class);
-				Result<User> permitted_change = validatedUserOrError(ok(user), pwd);
+				var user = JSON.decode(jedis.get(userId), UserImp.class);
+				Result<UserImp> permitted_change = validatedUserOrError(ok(user), pwd);
 
 				if (permitted_change.isOK()) {
 					// Delete user shorts and related info, and the user from the DB asynchronously
@@ -146,7 +146,7 @@ public class JavaUsers implements Users {
 			e.printStackTrace();
 		}
 
-		return errorOrResult(validatedUserOrError(DB.getOne(userId, User.class), pwd), user -> {
+		return errorOrResult(validatedUserOrError(DB.getOne(userId, UserImp.class), pwd), user -> {
 
 			// Delete user shorts and related info asynchronously in a separate thread
 			Executors.defaultThreadFactory().newThread(() -> {
@@ -159,28 +159,28 @@ public class JavaUsers implements Users {
 	}
 
 	@Override
-	public Result<List<User>> searchUsers(String pattern) {
+	public Result<List<UserImp>> searchUsers(String pattern) {
 		Log.info(() -> format("searchUsers : patterns = %s\n", pattern));
 		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
-		var hits = DB.sql(query, User.class).value()
+		var hits = DB.sql(query, UserImp.class).value()
 				.stream()
-				.map(User::copyWithoutPassword)
+				.map(UserImp::copyWithoutPassword)
 				.toList();
 		return ok(hits);
 	}
 
-	private Result<User> validatedUserOrError(Result<User> res, String pwd) {
+	private Result<UserImp> validatedUserOrError(Result<UserImp> res, String pwd) {
 		if (res.isOK())
 			return res.value().getPwd().equals(pwd) ? res : error(FORBIDDEN);
 		else
 			return res;
 	}
 
-	private boolean badUserInfo(User user) {
+	private boolean badUserInfo(UserImp user) {
 		return (user.userId() == null || user.pwd() == null || user.displayName() == null || user.email() == null);
 	}
 
-	private boolean badUpdateUserInfo(String userId, String pwd, User info) {
+	private boolean badUpdateUserInfo(String userId, String pwd, UserImp info) {
 		return (userId == null || pwd == null || info.getUserId() != null && !userId.equals(info.getUserId()));
 	}
 }

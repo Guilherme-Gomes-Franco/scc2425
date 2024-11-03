@@ -4,27 +4,39 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-public class User {
+public class UserImp {
 
 	@Id
 	private String userId;
 	private String pwd;
 	private String email;
 	private String displayName;
+	private String id;
 
-	public User() {}
+	public UserImp() {
+		this.id = userId;
+	}
 
-	public User(String userId, String pwd, String email, String displayName) {
+	public UserImp(String userId, String pwd, String email, String displayName) {
 		this.pwd = pwd;
 		this.email = email;
 		this.userId = userId;
 		this.displayName = displayName;
+		this.id = userId;
 	}
 
 	private String _rid;
 
 	public String get_rid() {
 		return _rid;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public void set_rid(String _rid) {
@@ -94,12 +106,12 @@ public class User {
 		return "User [userId=" + userId + ", pwd=" + pwd + ", email=" + email + ", displayName=" + displayName + "]";
 	}
 
-	public User copyWithoutPassword() {
-		return new User(userId, "", email, displayName);
+	public UserImp copyWithoutPassword() {
+		return new UserImp(userId, "", email, displayName);
 	}
 
-	public User updateFrom(User other) {
-		return new User(userId,
+	public UserImp updateFrom(UserImp other) {
+		return new UserImp(userId,
 				other.pwd != null ? other.pwd : pwd,
 				other.email != null ? other.email : email,
 				other.displayName != null ? other.displayName : displayName);

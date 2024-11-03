@@ -6,6 +6,8 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import tukano.api.Result.*;
 import tukano.api.Result;
+import tukano.api.Short;
+import tukano.api.UserImp;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -26,8 +28,8 @@ public class CosmosDBLayer {
 		CosmosClient client = new CosmosClientBuilder()
 		         .endpoint(CONNECTION_URL)
 		         .key(DB_KEY)
-		         //.directMode()
-		         .gatewayMode()		
+		         .directMode()
+		         //.gatewayMode()
 		         // replace by .directMode() for better performance
 		         .consistencyLevel(ConsistencyLevel.SESSION)
 		         .connectionSharingAcrossClientsEnabled(true)
@@ -35,7 +37,16 @@ public class CosmosDBLayer {
 		         .buildClient();
 		instance = new CosmosDBLayer( client);
 		return instance;
-		
+	}
+
+	public static void main(String[] args) {
+		CosmosDBLayer db = getInstance();
+		UserImp user = new UserImp("aaa", "asds", "sss@ss.com", "Ze");
+		Short shortt = new Short("5442", "aaa", "ffff.com");
+		System.out.println(db.insertOne(user));
+		System.out.println(db.insertOne(shortt));
+		System.out.println(db.getOne(user.getId(), UserImp.class));
+		System.out.println(db.getOne(shortt.getId(), Short.class));
 	}
 	
 	private CosmosClient client;
@@ -85,7 +96,7 @@ public class CosmosDBLayer {
 			init();
 			return Result.ok(supplierFunc.get());			
 		} catch( CosmosException ce ) {
-			//ce.printStackTrace();
+			ce.printStackTrace();
 			return Result.error ( errorCodeFromStatus(ce.getStatusCode() ));		
 		} catch( Exception x ) {
 			x.printStackTrace();

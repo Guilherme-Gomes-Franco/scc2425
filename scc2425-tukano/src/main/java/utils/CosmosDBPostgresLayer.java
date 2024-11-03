@@ -4,7 +4,7 @@ import java.sql.*;
 
 import tukano.api.Result;
 import tukano.api.Result.ErrorCode;
-import tukano.api.User;
+import tukano.api.UserImp;
 import tukano.api.Short;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class CosmosDBPostgresLayer {
 
 	public <T> Result<T> getOne(String id, Class<T> clazz) {
 		String queryStr;
-		if (clazz == User.class) {
+		if (clazz == UserImp.class) {
 			queryStr = "SELECT * FROM users WHERE userId = ?";
 		} else if (clazz == Short.class) {
 			queryStr = "SELECT * FROM shorts WHERE shortId = ?";
@@ -80,9 +80,9 @@ public class CosmosDBPostgresLayer {
 	public <T> Result<T> deleteOne(T obj) {
 		String deleteQuery;
 		String id;
-		if (obj instanceof User) {
+		if (obj instanceof UserImp) {
 			deleteQuery = "DELETE FROM users WHERE userId = ?";
-			id = ((User) obj).getUserId();
+			id = ((UserImp) obj).getUserId();
 		} else if (obj instanceof Short) {
 			deleteQuery = "DELETE FROM shorts WHERE shortId = ?";
 			id = ((Short) obj).getShortId();
@@ -102,8 +102,8 @@ public class CosmosDBPostgresLayer {
 	}
 
 	public <T> Result<T> updateOne(T obj) {
-		if (obj instanceof User) {
-			User user = (User) obj;
+		if (obj instanceof UserImp) {
+			UserImp user = (UserImp) obj;
 			String updateQuery = "UPDATE users SET pwd = ?, email = ?, displayName = ?, _rid = ?, _ts = ? WHERE userId = ?";
 			return tryCatch(() -> {
 				try (PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
@@ -143,8 +143,8 @@ public class CosmosDBPostgresLayer {
 	}
 
 	public <T> Result<T> insertOne(T obj) {
-		if (obj instanceof User) {
-			User user = (User) obj;
+		if (obj instanceof UserImp) {
+			UserImp user = (UserImp) obj;
 			String insertQuery = "INSERT INTO users (userId, pwd, email, displayName, _rid, _ts) VALUES (?, ?, ?, ?, ?, ?)";
 			return tryCatch(() -> {
 				try (PreparedStatement stmt = connection.prepareStatement(insertQuery)) {

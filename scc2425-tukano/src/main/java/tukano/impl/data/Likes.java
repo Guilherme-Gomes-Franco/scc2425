@@ -7,12 +7,15 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Likes {
-	
-	@Id 
+
 	String userId;
-	
-	@Id 
+
 	String shortId;
+
+	String ownerId;
+
+	@Id
+	String id;
 	
 	public String getOwnerId() {
 		return ownerId;
@@ -22,7 +25,6 @@ public class Likes {
 		this.ownerId = ownerId;
 	}
 
-	String ownerId;
 	
 	public Likes() {}
 
@@ -30,10 +32,19 @@ public class Likes {
 		this.userId = userId;
 		this.shortId = shortId;
 		this.ownerId = ownerId;
+		this.id = userId + "-" + shortId;
 	}
 
 	public String getUserId() {
 		return userId;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public void setUserId(String userId) {

@@ -12,7 +12,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-import tukano.api.User;
+import tukano.api.UserImp;
 
 @Path(RestUsers.PATH)
 public interface RestUsers {
@@ -22,48 +22,33 @@ public interface RestUsers {
 	String PWD = "pwd";
 	String QUERY = "query";
 	String USER_ID = "userId";
-
-	@GET
-	@Produces(MediaType.TEXT_HTML)
-    default String version() {
-
-		var sb = new StringBuilder("<html>");
-
-		sb.append("<p>version: 0001</p>");
-
-		System.getProperties().forEach( (k,v) -> {
-			sb.append("<p><pre>").append(k).append("  =  ").append( v ).append("</pre></p>");
-		});
-		sb.append("</hmtl>");
-		return sb.toString();
-	}
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	String createUser(User user);
+	String createUser(UserImp user);
 	
 	
 	@GET
 	@Path("/{" + USER_ID+ "}")
 	@Produces(MediaType.APPLICATION_JSON)
-	User getUser(@PathParam(USER_ID) String userId, @QueryParam( PWD ) String pwd);
+	UserImp getUser(@PathParam(USER_ID) String userId, @QueryParam( PWD ) String pwd);
 	
 	
 	@PUT
 	@Path("/{" + USER_ID+ "}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	User updateUser(@PathParam( USER_ID ) String userId, @QueryParam( PWD ) String pwd, User user);
+	UserImp updateUser(@PathParam( USER_ID ) String userId, @QueryParam( PWD ) String pwd, UserImp user);
 	
 	
 	@DELETE
 	@Path("/{" + USER_ID+ "}")
 	@Produces(MediaType.APPLICATION_JSON)
-	User deleteUser(@PathParam(USER_ID) String userId, @QueryParam(PWD) String pwd);
+	UserImp deleteUser(@PathParam(USER_ID) String userId, @QueryParam(PWD) String pwd);
 	
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	List<User> searchUsers(@QueryParam(QUERY) String pattern);	
+	List<UserImp> searchUsers(@QueryParam(QUERY) String pattern);
 }

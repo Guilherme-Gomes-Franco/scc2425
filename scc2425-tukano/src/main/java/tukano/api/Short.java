@@ -18,19 +18,22 @@ import tukano.impl.Token;
 public class Short {
 
 	@Id
-	String shortId;
-	String ownerId;
-	String blobUrl;
-	long timestamp;
-	int totalLikes;
+	private String shortId;
+	private String ownerId;
+	private String blobUrl;
+	private long timestamp;
+	private int totalLikes;
 	private String _rid;
 	private String _ts;
+	private String id;
 
 	public Short() {
+		this.id = shortId;
 	}
 
 	public Short(String shortId, String ownerId, String blobUrl, long timestamp, int totalLikes) {
 		super();
+		this.id = shortId;
 		this.shortId = shortId;
 		this.ownerId = ownerId;
 		this.blobUrl = blobUrl;
@@ -42,6 +45,12 @@ public class Short {
 		this(shortId, ownerId, blobUrl, System.currentTimeMillis(), 0);
 	}
 
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public void set_rid(String _rid) {
 		this._rid = _rid;

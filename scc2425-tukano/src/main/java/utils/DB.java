@@ -10,11 +10,13 @@ import tukano.api.Result;
 
 public class DB {
 
+	private static final boolean USE_POSTGRES = false;
+
 	public static <T> Result<List<T>> sql(String query, Class<T> clazz) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
-		if (usePostgres)
-			return CosmosDBPostgresLayer.getInstance().query(clazz, query);
+		if (USE_POSTGRES)
+			return Hibernate.getInstance().sql(query, clazz);
 		else
 			return CosmosDBLayer.getInstance().query(clazz, query);
 	}
@@ -22,8 +24,8 @@ public class DB {
 	public static <T> Result<List<T>> sql(Class<T> clazz, String fmt, Object... args) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
-		if (usePostgres)
-			return CosmosDBPostgresLayer.getInstance().query(clazz, String.format(fmt, args));
+		if (USE_POSTGRES)
+			return Hibernate.getInstance().sql(String.format(fmt, args), clazz);
 		else
 			return CosmosDBLayer.getInstance().query(clazz, String.format(fmt, args));
 	}
@@ -31,8 +33,8 @@ public class DB {
 	public static <T> Result<T> getOne(String id, Class<T> clazz) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
-		if (usePostgres)
-			return CosmosDBPostgresLayer.getInstance().getOne(id, clazz);
+		if (USE_POSTGRES)
+			return Hibernate.getInstance().getOne(id, clazz);
 		else
 			return CosmosDBLayer.getInstance().getOne(id, clazz);
 	}
@@ -41,8 +43,8 @@ public class DB {
 	public static <T> Result<T> deleteOne(T obj) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
-		if (usePostgres)
-			return CosmosDBPostgresLayer.getInstance().deleteOne(obj);
+		if (USE_POSTGRES)
+			return Hibernate.getInstance().deleteOne(obj);
 		else
 			return (Result<T>) CosmosDBLayer.getInstance().deleteOne(obj);
 	}
@@ -51,17 +53,17 @@ public class DB {
 	public static <T> Result<T> updateOne(T obj) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
-		if (usePostgres)
-			return CosmosDBPostgresLayer.getInstance().updateOne(obj);
+		if (USE_POSTGRES)
+			return Hibernate.getInstance().updateOne(obj);
 		else
-			return (Result<T>) CosmosDBLayer.getInstance().updateOne(obj);
+			return CosmosDBLayer.getInstance().updateOne(obj);
 	}
 
 	public static <T> Result<T> insertOne(T obj) {
 		boolean usePostgres = Boolean.parseBoolean(System.getenv("USE_POSTGRES"));
 
-		if (usePostgres)
-			return Result.errorOrValue(CosmosDBPostgresLayer.getInstance().insertOne(obj), obj);
+		if (USE_POSTGRES)
+			return Result.errorOrValue(Hibernate.getInstance().persistOne(obj), obj);
 		else
 			return Result.errorOrValue(CosmosDBLayer.getInstance().insertOne(obj), obj);
 	}
