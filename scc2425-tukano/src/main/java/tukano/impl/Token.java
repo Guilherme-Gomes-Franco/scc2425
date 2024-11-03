@@ -8,8 +8,8 @@ public class Token {
 	private static Logger Log = Logger.getLogger(Token.class.getName());
 
 	private static final String DELIMITER = "-";
-	private static final long MAX_TOKEN_AGE = 10000;
-	private static String secret="aaaa";
+	private static final long MAX_TOKEN_AGE = 100000;
+	private static String secret="my_secret";
 
 	public static void setSecret(String s) {
 		secret = s;
@@ -23,6 +23,7 @@ public class Token {
 	
 	public static String get(String id) {
 		var timestamp = System.currentTimeMillis();
+		//Log.info(String.format("Sign with id: %s, timestamp: %s secret: %s\n", id, timestamp, secret));
 		var signature = Hash.of(id, timestamp, secret);
 		return String.format("%s%s%s", timestamp, DELIMITER, signature);
 	}
@@ -31,9 +32,10 @@ public class Token {
 		try {
 			var bits = tokenStr.split(DELIMITER);
 			var timestamp = Long.valueOf(bits[0]);
+			//Log.info(String.format("Receive id: %s, timestamp: %s secret: %s\n", id, timestamp, secret));
 			var hmac = Hash.of(id, timestamp, secret);
 			var elapsed = Math.abs(System.currentTimeMillis() - timestamp);			
-			Log.info(String.format("hash ok:%s, elapsed %s ok: %s\n", hmac.equals(bits[1]), elapsed, elapsed < MAX_TOKEN_AGE));
+			Log.info(String.format("hash ok: %s, elapsed %s ok: %s\n", hmac.equals(bits[1]), elapsed, elapsed < MAX_TOKEN_AGE));
 			return hmac.equals(bits[1]) && elapsed < MAX_TOKEN_AGE;			
 		} catch( Exception x ) {
 			x.printStackTrace();

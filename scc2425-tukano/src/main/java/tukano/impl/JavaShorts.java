@@ -58,7 +58,7 @@ public class JavaShorts implements Shorts {
 			Result<Short> res = errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
 			try (var jedis = RedisCache.getCachePool().getResource()) {
 				if (res.isOK()) {
-					jedis.setex(shortId, 100, JSON.encode(shrt.copyWithLikes_And_Token(0)));
+					jedis.setex(shortId, 100, JSON.encode(res.value()));
 					jedis.setex(LIKES_KEY + shortId, 100, "0");
 				}
 			} catch (Exception e) {
@@ -93,7 +93,6 @@ public class JavaShorts implements Shorts {
 		}
 		var likes = DB.sql(query, Long.class);
 		return errorOrValue(getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.value().get(0)));
-
 	}
 
 	@Override

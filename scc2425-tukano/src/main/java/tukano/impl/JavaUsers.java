@@ -125,7 +125,7 @@ public class JavaUsers implements Users {
 		if (userId == null || pwd == null)
 			return error(BAD_REQUEST);
 
-		/*try (var jedis = RedisCache.getCachePool().getResource()) {
+		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(userId)) {
 				var user = JSON.decode(jedis.get(userId), UserImp.class);
 				Result<UserImp> permitted_change = validatedUserOrError(ok(user), pwd);
@@ -147,7 +147,7 @@ public class JavaUsers implements Users {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 
 		var userr = DB.getOne(userId, UserImp.class);
 		var res = errorOrResult(validatedUserOrError(userr, pwd), user -> {

@@ -1,11 +1,11 @@
 package tukano.impl.storage;
 
+import com.azure.storage.blob.models.BlobItem;
 import tukano.api.Result;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
@@ -18,7 +18,7 @@ import static tukano.api.Result.error;
 import static tukano.api.Result.ok;
 import utils.Hash;
 
-public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
+public class AzureBlobStorage implements BlobStorage {
     private static final String STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=scc2323;AccountKey=8gfHhcOfIAtd+mZkMcYCNwW1rLYHvKvimgfplN/0PWl4ceca+qjkBUWpwJoX4bln8eRk/Nq2431j+ASt9TXmRw==;EndpointSuffix=core.windows.net";
     private static final String BLOBS_CONTAINER_NAME = "blobs";
     private final BlobContainerClient containerClient;
@@ -32,7 +32,7 @@ public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
 
     @Override
     public Result<Void> write(String path, byte[] bytes) {
-        if (path == null)
+        if (path == null )
             return error(BAD_REQUEST);
 
         BlobClient blob = containerClient.getBlobClient(path);
@@ -54,6 +54,11 @@ public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
         if (path == null)
             return error(BAD_REQUEST);
 
+        if(path.endsWith("/")){
+            deleteAll(path);
+            return ok();
+        }
+
         BlobClient blob = containerClient.getBlobClient(path);
 
         if (blob.exists()) {
@@ -61,6 +66,20 @@ public class AzureBlobStorage implements tukano.impl.storage.BlobStorage {
             blob.delete();
         }
         return ok();
+    }
+
+    public void deleteAll(String path) {
+        try {
+            for (BlobItem blobItem : containerClient.listBlobsByHierarchy(path)) {
+                String blobName = blobItem.getName();  // Get the name of each blob
+                BlobClient blobClient = containerClient.getBlobClient(blobName);
+                if (blobClient.exists()) {
+                    blobClient.delete();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
