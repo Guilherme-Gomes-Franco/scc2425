@@ -136,9 +136,9 @@ public class JavaUsers implements Users {
 					Executors.defaultThreadFactory().newThread(() -> {
 						JavaShorts.getInstance().deleteAllShorts(userId, pwd, Token.get(userId));
 						JavaBlobs.getInstance().deleteAllBlobs(userId, Token.get(userId));
-						DB.deleteOne(user);
-					}).start();
 
+					}).start();
+					DB.deleteOne(user);
 					jedis.del(userId);
 					return ok(user);
 				} else {
@@ -163,7 +163,8 @@ public class JavaUsers implements Users {
 
 		if (res.isOK())
 			return userr;
-		else return res;
+		else
+			return res;
 	}
 
 	@Override
