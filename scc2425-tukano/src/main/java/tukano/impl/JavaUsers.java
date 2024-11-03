@@ -125,7 +125,7 @@ public class JavaUsers implements Users {
 		if (userId == null || pwd == null)
 			return error(BAD_REQUEST);
 
-		try (var jedis = RedisCache.getCachePool().getResource()) {
+		/*try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(userId)) {
 				var user = JSON.decode(jedis.get(userId), UserImp.class);
 				Result<UserImp> permitted_change = validatedUserOrError(ok(user), pwd);
@@ -147,9 +147,10 @@ public class JavaUsers implements Users {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 
-		return errorOrResult(validatedUserOrError(DB.getOne(userId, UserImp.class), pwd), user -> {
+		var userr = DB.getOne(userId, UserImp.class);
+		var res = errorOrResult(validatedUserOrError(userr, pwd), user -> {
 
 			// Delete user shorts and related info asynchronously in a separate thread
 			Executors.defaultThreadFactory().newThread(() -> {
@@ -159,6 +160,10 @@ public class JavaUsers implements Users {
 
 			return DB.deleteOne(user);
 		});
+
+		if (res.isOK())
+			return userr;
+		else return res;
 	}
 
 	@Override

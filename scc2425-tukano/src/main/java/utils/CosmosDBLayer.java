@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 
 
 public class CosmosDBLayer {
+
 	private static final String CONNECTION_URL = "https://scc2324.documents.azure.com:443/"; // replace with your own
 	private static final String DB_KEY = "sub43ypMfUivUL3kQMoCrPtak8YCqErh0g60Gp7zLR4x3ZHm4QLyJUYt4KdC5cExPEfv3U7GYeWtACDbbaWOfQ==";
 	private static final String DB_NAME = "scc2324";
@@ -75,11 +76,12 @@ public class CosmosDBLayer {
 	public <T> Result<T> getOne(String id, Class<T> clazz) {
 		return tryCatch( () -> container.readItem(id, new PartitionKey(id), clazz).getItem());
 	}
-	
+
 	public <T> Result<?> deleteOne(T obj) {
 		return tryCatch( () -> container.deleteItem(obj, new CosmosItemRequestOptions()).getItem());
 	}
-	
+
+
 	public <T> Result<T> updateOne(T obj) {
 		return tryCatch( () -> container.upsertItem(obj).getItem());
 	}
