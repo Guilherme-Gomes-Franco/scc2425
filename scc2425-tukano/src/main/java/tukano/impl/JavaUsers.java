@@ -20,6 +20,8 @@ import utils.DB;
 import utils.JSON;
 import utils.RedisCache;
 
+import javax.ws.rs.WebApplicationException;
+
 public class JavaUsers implements Users {
 
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
@@ -142,7 +144,6 @@ public class JavaUsers implements Users {
 				} else {
 					return error(permitted_change.error());
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -163,7 +164,7 @@ public class JavaUsers implements Users {
 	@Override
 	public Result<List<UserImp>> searchUsers(String pattern) {
 		Log.info(() -> format("searchUsers : patterns = %s\n", pattern));
-		var query = format("SELECT * FROM User u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
+		var query = format("SELECT * FROM UserImp u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
 		var hits = DB.sql(query, UserImp.class).value()
 				.stream()
 				.map(UserImp::copyWithoutPassword)

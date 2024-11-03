@@ -47,6 +47,10 @@ public class CosmosDBLayer {
 		System.out.println(db.insertOne(shortt));
 		System.out.println(db.getOne(user.getId(), UserImp.class));
 		System.out.println(db.getOne(shortt.getId(), Short.class));
+		System.out.println(db.deleteOne(shortt));
+		System.out.println(db.deleteOne(user));
+		System.out.println(db.getOne(user.getId(), UserImp.class));
+		System.out.println(db.getOne(shortt.getId(), Short.class));
 	}
 	
 	private CosmosClient client;
