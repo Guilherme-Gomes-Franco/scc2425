@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.hibernate.Session;
 
 import tukano.api.Result;
+import tukano.impl.data.Likes;
 
 public class DB {
 
@@ -126,7 +127,12 @@ public class DB {
 
 		@Override
 		public void executeUpdate(String query, Class<?> clazz) {
-			cosmosDBLayer.query(clazz, query);
+			if (query.contains("DELETE")){
+				query = query.replace("DELETE", "SELECT *");
+				List<?> res = cosmosDBLayer.query(clazz, query).value();
+				res.stream().map(cosmosDBLayer::deleteOne);
+			}
+			//cosmosDBLayer.query(clazz, query);
 		}
 	}
 }

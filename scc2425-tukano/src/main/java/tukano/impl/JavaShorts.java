@@ -212,11 +212,11 @@ public class JavaShorts implements Shorts {
 
 			// delete follows
 			var query2 = format("DELETE FROM Following f WHERE f.follower = '%s' OR f.followee = '%s'", userId, userId);
-			dbSession.executeUpdate(query2, Short.class);
+			dbSession.executeUpdate(query2, Following.class);
 
 			// delete likes
 			var query3 = format("DELETE FROM Likes l WHERE l.ownerId = '%s' OR l.userId = '%s'", userId, userId);
-			dbSession.executeUpdate(query3, Short.class);
+			dbSession.executeUpdate(query3, Likes.class);
 
 		});
 

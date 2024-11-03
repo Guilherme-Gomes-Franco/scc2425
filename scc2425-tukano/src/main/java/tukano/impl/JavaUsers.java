@@ -67,7 +67,7 @@ public class JavaUsers implements Users {
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(userId)) {
-				UserImp user = JSON.decode(jedis.getEx(userId, exParams.ex(10)), UserImp.class);
+				UserImp user = JSON.decode(jedis.get(userId), UserImp.class);
 				return validatedUserOrError(Result.ok(user), pwd);
 			}
 		} catch (Exception e) {
