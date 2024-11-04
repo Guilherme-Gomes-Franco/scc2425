@@ -5,6 +5,7 @@ import jakarta.ws.rs.core.Application;
 import java.util.Set;
 import java.util.HashSet;
 import utils.IP;
+import utils.Props;
 
 public class TukanoRestApplication extends Application {
 
@@ -25,6 +26,8 @@ public class TukanoRestApplication extends Application {
 		singletons.add(new RestBlobsResource());
 		singletons.add(new RestShortsResource());
 		singletons.add(new RestUsersResource());
+
+		Props.load("azurekeys-region.props");
 	}
 
 	@Override

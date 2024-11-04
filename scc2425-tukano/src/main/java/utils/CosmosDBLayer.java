@@ -27,8 +27,8 @@ public class CosmosDBLayer {
 			return instance;
 
 		CosmosClient client = new CosmosClientBuilder()
-		         .endpoint(CONNECTION_URL)
-		         .key(DB_KEY)
+		         .endpoint(Props.get("COSMOSDB_URL", CONNECTION_URL))
+		         .key(Props.get("COSMOSDB_KEY", DB_KEY))
 		         .directMode()
 		         //.gatewayMode()
 		         // replace by .directMode() for better performance
