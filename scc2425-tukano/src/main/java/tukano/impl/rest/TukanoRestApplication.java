@@ -19,6 +19,8 @@ public class TukanoRestApplication extends Application {
 	public TukanoRestApplication() {
 		serverURI = String.format(SERVER_BASE_URI, 	IP.hostname(), PORT);
 
+		Props.load("azurekeys-region.props");
+
 		resources.add(RestBlobsResource.class);
 		resources.add(RestShortsResource.class);
 		resources.add(RestUsersResource.class);
@@ -26,8 +28,6 @@ public class TukanoRestApplication extends Application {
 		singletons.add(new RestBlobsResource());
 		singletons.add(new RestShortsResource());
 		singletons.add(new RestUsersResource());
-
-		Props.load("azurekeys-region.props");
 	}
 
 	@Override

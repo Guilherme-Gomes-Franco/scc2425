@@ -5,6 +5,10 @@ import java.util.Properties;
 
 public class Props {
 
+	public static String get(String key){
+		return get(key, "key_not_found");
+	}
+
 	public static String get(String key, String defaultValue) {
 		var val = System.getProperty(key);
 		return val == null ? defaultValue : val;

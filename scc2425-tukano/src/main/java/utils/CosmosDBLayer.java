@@ -15,11 +15,6 @@ import java.util.function.Supplier;
 
 public class CosmosDBLayer {
 
-	private static final String CONNECTION_URL = "https://scc2324.documents.azure.com:443/"; // replace with your own
-	private static final String DB_KEY = "sub43ypMfUivUL3kQMoCrPtak8YCqErh0g60Gp7zLR4x3ZHm4QLyJUYt4KdC5cExPEfv3U7GYeWtACDbbaWOfQ==";
-	private static final String DB_NAME = "scc2324";
-	private static final String CONTAINER = "users";
-	
 	private static CosmosDBLayer instance;
 
 	public static synchronized CosmosDBLayer getInstance() {
@@ -27,8 +22,8 @@ public class CosmosDBLayer {
 			return instance;
 
 		CosmosClient client = new CosmosClientBuilder()
-		         .endpoint(Props.get("COSMOSDB_URL", CONNECTION_URL))
-		         .key(Props.get("COSMOSDB_KEY", DB_KEY))
+		         .endpoint(Props.get("COSMOSDB_URL"))
+		         .key(Props.get("COSMOSDB_KEY"))
 		         .directMode()
 		         //.gatewayMode()
 		         // replace by .directMode() for better performance
@@ -38,20 +33,6 @@ public class CosmosDBLayer {
 		         .buildClient();
 		instance = new CosmosDBLayer( client);
 		return instance;
-	}
-
-	public static void main(String[] args) {
-		CosmosDBLayer db = getInstance();
-		UserImp user = new UserImp("aaa", "asds", "sss@ss.com", "Ze");
-		Short shortt = new Short("5442", "aaa", "ffff.com");
-		System.out.println(db.insertOne(user));
-		System.out.println(db.insertOne(shortt));
-		System.out.println(db.getOne(user.getId(), UserImp.class));
-		System.out.println(db.getOne(shortt.getId(), Short.class));
-		System.out.println(db.deleteOne(shortt));
-		System.out.println(db.deleteOne(user));
-		System.out.println(db.getOne(user.getId(), UserImp.class));
-		System.out.println(db.getOne(shortt.getId(), Short.class));
 	}
 	
 	private CosmosClient client;
@@ -65,8 +46,8 @@ public class CosmosDBLayer {
 	private synchronized void init() {
 		if( db != null)
 			return;
-		db = client.getDatabase(DB_NAME);
-		container = db.getContainer(CONTAINER);
+		db = client.getDatabase(Props.get("COSMOSDB_DATABASE"));
+		container = db.getContainer(Props.get("COSMOSDB_CONTAINER"));
 	}
 
 	public void close() {

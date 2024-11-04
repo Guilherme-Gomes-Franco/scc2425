@@ -20,8 +20,6 @@ import utils.DB;
 import utils.JSON;
 import utils.RedisCache;
 
-import javax.ws.rs.WebApplicationException;
-
 public class JavaUsers implements Users {
 
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());

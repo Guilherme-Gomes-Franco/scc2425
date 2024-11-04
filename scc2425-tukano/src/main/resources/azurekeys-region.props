@@ -1,6 +1,0 @@
-# Date : 11/04/24, 10:16 AM
-BlobStoreConnection=DefaultEndpointsProtocol=https;AccountName=stoxxxxxnortheurope;AccountKey=R6eBqQeIwFjdvIX2fDg/eM3W0NudmStHEBmMrAoIzX5A0RLrWgUYD+c9yiZPV6jeTuEQF5oJJf6w+AStWoxHtA==;EndpointSuffix=core.windows.net
-COSMOSDB_KEY=sub43ypMfUivUL3kQMoCrPtak8YCqErh0g60Gp7zLR4x3ZHm4QLyJUYt4KdC5cExPEfv3U7GYeWtACDbbaWOfQ==
-COSMOSDB_URL=https://scc2324.documents.azure.com:443/
-COSMOSDB_DATABASE=scc2324
-COSMOSDB_CONTAINER=users
