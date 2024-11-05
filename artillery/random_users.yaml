@@ -9,10 +9,10 @@ config:
     arrivalRate: 1
     rampTo: 5
   - name: "Main test"    # MAIN TESTS: duration: 30s, with 10 new clients/sec. Should be varied depending on scenario.
-    duration: 30
+    duration: 10
     arrivalRate: 10
 scenarios:
-  - name: 'Register user'
+  - name: 'Register and retrieve user'
     weight: 1
     flow:
       - post:
@@ -22,3 +22,8 @@ scenarios:
             Accept: application/json
           beforeRequest: "uploadRandomizedUser"
           afterResponse: "processRegisterReply"
+      - get:
+          url: "/users/{{ userId }}/?pwd={{ pwd }}" # Replace with the specific user ID variable
+          headers:
+            Accept: application/json
+          beforeRequest: "prepareGetUser" # Custom function to set the user ID

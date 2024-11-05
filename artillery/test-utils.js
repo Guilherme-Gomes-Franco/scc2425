@@ -5,7 +5,8 @@
  */
 module.exports = {
   uploadRandomizedUser,
-  processRegisterReply
+  processRegisterReply,
+  prepareGetUser
 }
 
 
@@ -13,6 +14,7 @@ const fs = require('fs') // Needed for access to blobs.
 
 var registeredUsers = []
 var images = []
+var users = []
 
 // All endpoints starting with the following prefixes will be aggregated in the same for the statistics
 var statsPrefix = [ ["/rest/media/","GET"],
@@ -85,5 +87,51 @@ function uploadRandomizedUser(requestParams, context, ee, next) {
         displayName: displayName
     };
     requestParams.body = JSON.stringify(user);
+    users.push(user);
     return next();
-} 
+}
+
+let users_searched = 0;
+
+// Prepare user retrieval by setting the user ID in the URL
+function prepareGetUser(requestParams, context, ee, next) {
+    const user = users[users_searched++];
+    requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
+    requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
+    console.log(`Attempting to retrieve user with ID: ${user.userId}`);
+    return next();
+}
+
+function generateUser(){
+    let username = randomUsername(15);
+    let pword = randomPassword(5);
+    let email = username + "@campus.fct.unl.pt";
+    let displayName = username;
+    
+    const user = {
+        userId: username,
+        pwd: pword,
+        email: email,
+        displayName: displayName
+    };
+    return user;
+}
+
+// Function to append a user to the CSV file
+function saveUserToCSV(user) {
+    const filePath = 'data/users.csv';
+    const csvLine = `${user.userId},${user.pwd},${user.email},"${user.displayName}"\n`;
+
+    // Check if file exists; if not, add the header
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, "userid,pwd,email,displayName\n", { flag: 'w' });
+    }
+
+    // Append user data to the file
+    fs.appendFileSync(filePath, csvLine, { flag: 'a' });
+}
+
+/*for( var i = 0; i < 1000; i++) {
+    var user = generateUser();
+    saveUserToCSV(user);
+}*/
