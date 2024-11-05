@@ -1,8 +1,5 @@
 package utils;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -31,7 +28,6 @@ public class Hibernate {
 	private Hibernate() {
 		try {
 			sessionFactory = new Configuration().configure().buildSessionFactory();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

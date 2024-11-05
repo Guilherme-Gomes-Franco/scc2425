@@ -60,7 +60,7 @@ public class JavaUsers implements Users {
 		Log.info(() -> format("getUser : userId = %s, pwd = %s\n", userId, pwd));
 		GetExParams exParams = new GetExParams();
 
-		if (userId == null)
+		if (userId == null || pwd == null || userId.isEmpty() || pwd.isEmpty())
 			return error(BAD_REQUEST);
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {

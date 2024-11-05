@@ -98,7 +98,7 @@ function prepareGetUser(requestParams, context, ee, next) {
     const user = users[users_searched++];
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
     requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
-    console.log(`Attempting to retrieve user with ID: ${user.userId}`);
+    //console.log(`Attempting to retrieve user with ID: ${user.userId}`);
     return next();
 }
 
