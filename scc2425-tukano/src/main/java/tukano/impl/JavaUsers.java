@@ -184,7 +184,10 @@ public class JavaUsers implements Users {
 	}
 
 	private boolean badUserInfo(UserImp user) {
-		return (user.userId() == null || user.pwd() == null || user.displayName() == null || user.email() == null);
+		return (user.userId() == null || user.getUserId().isEmpty() ||
+				user.pwd() == null || user.getPwd().isEmpty() ||
+				user.displayName() == null || user.getDisplayName().isEmpty() ||
+				user.email() == null || user.getEmail().isEmpty());
 	}
 
 	private boolean badUpdateUserInfo(String userId, String pwd, UserImp info) {
