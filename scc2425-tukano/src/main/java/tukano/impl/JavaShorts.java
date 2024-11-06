@@ -105,6 +105,21 @@ public class JavaShorts implements Shorts {
 		Log.info(() -> format("deleteShort : shortId = %s, pwd = %s\n", shortId, password));
 
 		return errorOrResult(getShort(shortId), shrt -> {
+			Log.info(() -> format("will attempt to delete blob from short: %s", shrt));
+
+			// Regular expression to capture the parts before and after "?token="
+			String regex = ".*/blobs/([^?]+)\\?token=([^&]+)";
+			java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+			java.util.regex.Matcher matcher = pattern.matcher(shrt.getBlobUrl());
+
+			String blobToken, blobId;
+			if (matcher.find()) {
+				blobId = matcher.group(1);  // Part before "?token="
+				blobToken = matcher.group(2);  // Token value after "?token="
+			} else {
+                blobToken = "";
+                blobId = "";
+			}
 
 			return errorOrResult(okUser(shrt.getOwnerId(), password), user -> {
 				try (var jedis = RedisCache.getCachePool().getResource()) {
@@ -118,7 +133,7 @@ public class JavaShorts implements Shorts {
 					String query = String.format("DELETE FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 					dbSession.executeUpdate(query, Likes.class);
 
-					JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get());
+					JavaBlobs.getInstance().delete(blobId, blobToken);
 				});
 			});
 		});
