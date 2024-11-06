@@ -88,7 +88,6 @@ public class JavaShorts implements Shorts {
 				jedis.expire(shortId, 10);
 				if (jedis.exists(LIKES_KEY + shortId)) {
 					String likes = jedis.get(LIKES_KEY + shortId);
-					jedis.expire(LIKES_KEY + shortId, 10);
 					return ok(shrt.copyWithLikes_And_Token(Integer.parseInt(likes)));
 				} else {
 					var likes = DB.sql(query, Long.class);
