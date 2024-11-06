@@ -51,11 +51,13 @@ public class JavaShorts implements Shorts {
 
 		return errorOrResult(okUser(userId, password), user -> {
 
-			var shortId = format("%s+%s", userId, UUID.randomUUID());
+			var shortId = format("%s:%s", userId, UUID.randomUUID());
 			var blobUrl = format("%s/%s/%s", TukanoRestApplication.serverURI, Blobs.NAME, shortId);
 			var shrt = new Short(shortId, userId, blobUrl);
 
-			Result<Short> res = errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
+			shrt = shrt.copyWithLikes_And_Token(0);
+
+			Result<Short> res = DB.insertOne(shrt);
 			try (var jedis = RedisCache.getCachePool().getResource()) {
 				if (res.isOK()) {
 					jedis.setex(shortId, 100, JSON.encode(res.value()));
