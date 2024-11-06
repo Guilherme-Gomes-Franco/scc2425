@@ -55,6 +55,14 @@ function processRegisterReply(requestParams, response, context, ee, next) {
     return next();
 }
 
+function processUpdateReply(requestParams, response, context, ee, next) {
+    if (response.body && response.body.length > 0) {
+        // Add the updated user data to a list, similar to how registered users are tracked
+        registeredUsers.push(response.body);
+    }
+    return next();
+}
+
 function uploadRandomizedUser(requestParams, context, ee, next) {
     let username = randomUsername(10);
     let password = randomPassword(8);
