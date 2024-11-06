@@ -32,7 +32,7 @@ public class Short {
 
 	public Short(String shortId, String ownerId, String blobUrl, long timestamp, int totalLikes) {
 		super();
-		this.id = shortId;
+		this.id = "short:"+shortId;
 		this.shortId = shortId;
 		this.ownerId = ownerId;
 		this.blobUrl = blobUrl;
