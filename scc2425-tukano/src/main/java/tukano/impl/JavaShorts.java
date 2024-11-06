@@ -60,8 +60,8 @@ public class JavaShorts implements Shorts {
 			Result<Short> res = DB.insertOne(shrt);
 			try (var jedis = RedisCache.getCachePool().getResource()) {
 				if (res.isOK()) {
-					jedis.setex(shortId, 100, JSON.encode(res.value()));
-					jedis.setex(LIKES_KEY + shortId, 100, "0");
+					jedis.setex(shortId, 10, JSON.encode(res.value()));
+					jedis.setex(LIKES_KEY + shortId, 10, "0");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -85,8 +85,10 @@ public class JavaShorts implements Shorts {
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(shortId)) {
 				Short shrt = JSON.decode(jedis.get(shortId), Short.class);
+				jedis.expire(shortId, 10);
 				if (jedis.exists(LIKES_KEY + shortId)) {
 					String likes = jedis.get(LIKES_KEY + shortId);
+					jedis.expire(LIKES_KEY + shortId, 10);
 					return ok(shrt.copyWithLikes_And_Token(Integer.parseInt(likes)));
 				} else {
 					var likes = DB.sql(query, Long.class);
@@ -97,7 +99,21 @@ public class JavaShorts implements Shorts {
 			e.printStackTrace();
 		}
 		var likes = DB.sql(query, Long.class);
-		return errorOrValue(getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.value().get(0)));
+		Log.info(() -> format("getShort : likes = %s\n", likes));
+		var res = errorOrValue(getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.value().get(0)));
+
+		Log.info(() -> format("getShort : res = %s\n", getOne(shortId, Short.class).value()));
+
+		if (res.isOK()) {
+			try (var jedis = RedisCache.getCachePool().getResource()) {
+				jedis.setex(shortId, 10, JSON.encode(res.value()));
+				jedis.setex(LIKES_KEY + shortId, 10, String.valueOf(likes.value().get(0)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return res;
 	}
 
 	@Override
