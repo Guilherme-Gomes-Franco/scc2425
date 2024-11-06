@@ -115,7 +115,17 @@ public class Short {
 	}
 
 	public Short copyWithLikes_And_Token(long totLikes) {
-		var urlWithToken = String.format("%s?token=%s", blobUrl, Token.get(blobUrl));
+		// Remove any existing token from blobUrl
+		String cleanBlobUrl = blobUrl.split("\\?token=")[0];
+
+		// If the original URL had a token, replace it; otherwise, append a new token
+		String urlWithToken;
+		if (blobUrl.contains("?token=")) {
+			urlWithToken = String.format("%s?token=%s", cleanBlobUrl, Token.get(cleanBlobUrl));
+		} else {
+			urlWithToken = String.format("%s?token=%s", blobUrl, Token.get(cleanBlobUrl));
+		}
+
 		return new Short(shortId, ownerId, urlWithToken, timestamp, (int) totLikes);
 	}
 }
