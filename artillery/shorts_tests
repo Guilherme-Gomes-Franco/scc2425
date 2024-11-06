@@ -1,0 +1,129 @@
+config:
+  target: "http://127.0.0.1:8080/tukano/rest"  # Update this with your API base URL
+  plugins:
+    metrics-by-endpoint: {}
+  phases:
+    - duration: 60
+      arrivalRate: 5
+  processor: "./helpers.js"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Create a new user"
+    flow:
+      - function: "uploadRandomizedUser"
+      - post:
+          url: "/users"
+          body: "{{ $loopback }}"
+          capture:
+            - json: "$.userId"
+              as: "userId"
+            - json: "$.pwd"
+              as: "pwd"
+      - function: "processRegisterReply"
+
+  - name: "Create a short for user and check blobUrl"
+    flow:
+      - post:
+          url: "/shorts/{{ userId }}"
+          qs:
+            pwd: "{{ pwd }}"
+          capture:
+            - json: "$.shortId"
+              as: "shortId"
+            - json: "$.blobUrl"
+              as: "blobUrl"
+      - function: "saveShortId"
+      - log: "Created short with blobUrl: {{ blobUrl }}"
+      - assert:
+          - "blobUrl": "matches"
+          - "/^https?:\\/\\/.*\\?token=.*$/"
+
+  - name: "Get and validate the created short"
+    flow:
+      - get:
+          url: "/shorts/{{ shortId }}"
+          capture:
+            - json: "$.totalLikes"
+              as: "totalLikes"
+            - json: "$.blobUrl"
+              as: "blobUrl"
+            - json: "$.totalViews"
+              as: "totalViews"
+      - assert:
+          - "totalLikes": "equals"
+          - 0
+      - assert:
+          - "totalViews": "equals"
+          - 0
+      - log: "Validated initial values of totalLikes and totalViews."
+
+  - name: "Like the short and validate increment"
+    flow:
+      - post:
+          url: "/shorts/{{ shortId }}/{{ userId }}/likes"
+          qs:
+            pwd: "{{ pwd }}"
+          json:
+            isLiked: true
+      - get:
+          url: "/shorts/{{ shortId }}"
+          capture:
+            - json: "$.totalLikes"
+              as: "totalLikes"
+      - assert:
+          - "totalLikes": "equals"
+          - 1
+      - log: "Liked the short, totalLikes now equals 1."
+
+  - name: "View the short and validate increment of views"
+    flow:
+      - get:
+          url: "/shorts/{{ shortId }}"
+          capture:
+            - json: "$.totalViews"
+              as: "totalViews"
+      - assert:
+          - "totalViews": "equals"
+          - 1
+      - log: "Viewed the short, totalViews now equals 1."
+
+  - name: "Follow a user"
+    flow:
+      - post:
+          url: "/shorts/{{ userId }}/{{ userId2 }}/followers"
+          qs:
+            pwd: "{{ pwd }}"
+          json:
+            isFollowing: true
+
+  - name: "Get followers for a user"
+    flow:
+      - get:
+          url: "/shorts/{{ userId }}/followers"
+          qs:
+            pwd: "{{ pwd }}"
+
+  - name: "Get feed for a user"
+    flow:
+      - get:
+          url: "/shorts/{{ userId }}/feed"
+          qs:
+            pwd: "{{ pwd }}"
+
+  - name: "Delete a short by ID"
+    flow:
+      - delete:
+          url: "/shorts/{{ shortId }}"
+          qs:
+            pwd: "{{ pwd }}"
+
+  - name: "Delete all shorts for a user"
+    flow:
+      - delete:
+          url: "/shorts/{{ userId }}/shorts"
+          qs:
+            pwd: "{{ pwd }}"
+            token: "exampleToken123"
