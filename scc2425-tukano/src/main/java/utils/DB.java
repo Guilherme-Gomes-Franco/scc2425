@@ -11,7 +11,7 @@ import tukano.impl.data.Likes;
 
 public class DB {
 
-	private static final boolean USE_POSTGRES = false;
+	public static final boolean USE_POSTGRES = false;
 
 	public static <T> Result<List<T>> sql(String query, Class<T> clazz) {
 		if (USE_POSTGRES)
