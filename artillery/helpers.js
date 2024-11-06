@@ -39,11 +39,18 @@ function randomUsername(charLimit) {
     return username;
 }
 
-function randomPassword(passLen) {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+// Returns a random password, drawn from printable ASCII characters
+function randomPassword(pass_len){
+    const skip_value = 33;
+    const lim_values = 94;
+    
     let password = '';
-    for (let i = 0; i < passLen; i++) {
-        password += chars[Math.floor(Math.random() * chars.length)];
+    for (let i = 0; i < pass_len; i++) {
+        let chosen_char =  Math.floor(Math.random() * lim_values) + skip_value;
+        if (chosen_char == "'" || chosen_char == '"')
+            i -= 1;
+        else
+            password += chosen_char
     }
     return password;
 }
@@ -76,10 +83,8 @@ function uploadRandomizedUser(requestParams, context, ee, next) {
     return next();
 }
 
-let usersSearched = 0;
-
 function prepareGetUser(requestParams, context, ee, next) {
-    const user = users[usersSearched++];
+    const user = users[getRandomUserIndex()];
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
     requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
     return next();
@@ -87,10 +92,10 @@ function prepareGetUser(requestParams, context, ee, next) {
 
 // Prepare request to update a specific user
 function prepareUpdateUser(requestParams, context, ee, next) {
-    const user = users.find(u => u.userId === context.vars.userId);
+    const user = users[getRandomUserIndex()];
 
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
-    requestParams.qs = { pwd: user.pwd };
+    requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
     requestParams.json = { ...user, displayName: `Updated_${user.displayName}` };
 
     return next();
@@ -98,18 +103,19 @@ function prepareUpdateUser(requestParams, context, ee, next) {
 
 // Prepare request to delete a specific user
 function prepareDeleteUser(requestParams, context, ee, next) {
-    const user = users.find(u => u.userId === context.vars.userId);
+    //const user = users.find(u => u.userId === context.vars.userId);
+    const user = users[getRandomUserIndex()];
 
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
-    requestParams.qs = { pwd: user.pwd };
+    requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
 
     return next();
 }
 
 // Prepare request to search for users with a pattern
 function prepareSearchPattern(requestParams, context, ee, next) {
-    context.vars.queryPattern = "testPattern"; // Customize the pattern as needed
-    requestParams.qs = { query: context.vars.queryPattern };
+   // context.vars.queryPattern = "testPattern"; // Customize the pattern as needed
+    requestParams.url = requestParams.url.replace('{{ queryPattern }}', "xy");
 
     return next();
 }
@@ -134,4 +140,8 @@ function extractBlobDetails(requestParams, response, context, ee, next) {
         console.log(`Extracted blobId: ${context.vars.blobId}, token: ${context.vars.token}`);
     }
     return next();
+}
+
+function getRandomUserIndex() {
+    return Math.floor(Math.random() * users.length);
 }

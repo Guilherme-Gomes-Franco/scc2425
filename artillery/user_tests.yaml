@@ -1,5 +1,6 @@
 config:
-  target: "https://tukano-scc-61052.azurewebsites.net/rest" 
+  #target: "https://tukano-scc-61052.azurewebsites.net/rest" 
+  target: "http://127.0.0.1:8080/tukano/rest" 
   plugins:
     metrics-by-endpoint: {}        # Enables per-endpoint metrics aggregation
   phases:
@@ -8,55 +9,47 @@ config:
     arrivalRate: 1
     rampTo: 5
   - name: "Main test"  
-    duration: 60
-    arrivalRate: 5
+    duration: 30
+    arrivalRate: 20
   processor: "./helpers.js"         # Path to the JavaScript helper file
   defaults:
     headers:
       Content-Type: "application/json"
 
 scenarios:
+
   - name: "Create a new user"
+   # weight: 1
     flow:
       - post:
           url: "/users/"
           beforeRequest: "uploadRandomizedUser"
           afterResponse: "processRegisterReply"
-      - log: "User created with ID: {{ userId }}"
 
   - name: "Get a user by userId and password"
+    #weight: 1
     flow:
       - get:
-          url: "/users/{{ userId }}"
-          qs:
-            pwd: "{{ pwd }}"
+          url: "/users/{{ userId }}?pwd={{ pwd }}"
           beforeRequest: "prepareGetUser"
       - log: "Retrieved user with ID: {{ userId }}"
 
   - name: "Update a user by userId and password"
     flow:
       - put:
-          url: "/users/{{ userId }}"
-          qs:
-            pwd: "{{ pwd }}"
+          url: "/users/{{ userId }}?pwd={{ pwd }}"
           beforeRequest: "prepareUpdateUser"
           afterResponse: "processUpdateReply"
-      - log: "Updated user with ID: {{ userId }}"
 
   - name: "Delete a user by userId and password"
+   # weight: 50
     flow:
       - delete:
-          url: "/users/{{ userId }}"
-          qs:
-            pwd: "{{ pwd }}"
+          url: "/users/{{ userId }}?pwd={{ pwd }}"
           beforeRequest: "prepareDeleteUser"
-      - log: "Deleted user with ID: {{ userId }}"
 
   - name: "Search users by query pattern"
     flow:
       - get:
-          url: "/users"
-          qs:
-            query: "{{ queryPattern }}"
+          url: "/users?query={{ queryPattern }}"
           beforeRequest: "prepareSearchPattern"
-      - log: "Searched users with pattern: {{ queryPattern }}"
