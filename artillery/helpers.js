@@ -4,6 +4,9 @@ module.exports = {
     uploadRandomizedUser,
     processRegisterReply,
     prepareGetUser,
+    prepareUpdateUser,
+    prepareDeleteUser,
+    prepareSearchPattern,
     saveShortId,
     extractBlobDetails
 };
@@ -71,6 +74,35 @@ function prepareGetUser(requestParams, context, ee, next) {
     const user = users[usersSearched++];
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
     requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
+    return next();
+}
+
+// Prepare request to update a specific user
+function prepareUpdateUser(requestParams, context, ee, next) {
+    const user = users.find(u => u.userId === context.vars.userId);
+
+    requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
+    requestParams.qs = { pwd: user.pwd };
+    requestParams.json = { ...user, displayName: `Updated_${user.displayName}` };
+
+    return next();
+}
+
+// Prepare request to delete a specific user
+function prepareDeleteUser(requestParams, context, ee, next) {
+    const user = users.find(u => u.userId === context.vars.userId);
+
+    requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
+    requestParams.qs = { pwd: user.pwd };
+
+    return next();
+}
+
+// Prepare request to search for users with a pattern
+function prepareSearchPattern(requestParams, context, ee, next) {
+    context.vars.queryPattern = "testPattern"; // Customize the pattern as needed
+    requestParams.qs = { query: context.vars.queryPattern };
+
     return next();
 }
 
