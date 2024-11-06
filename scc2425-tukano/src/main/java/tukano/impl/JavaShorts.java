@@ -98,10 +98,7 @@ public class JavaShorts implements Shorts {
 			e.printStackTrace();
 		}
 		var likes = DB.sql(query, Long.class);
-		Log.info(() -> format("getShort : likes = %s\n", likes));
 		var res = errorOrValue(getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.value().get(0)));
-
-		Log.info(() -> format("getShort : res = %s\n", getOne(shortId, Short.class).value()));
 
 		if (res.isOK()) {
 			try (var jedis = RedisCache.getCachePool().getResource()) {
