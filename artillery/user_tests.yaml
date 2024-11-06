@@ -16,48 +16,47 @@ config:
       Content-Type: "application/json"
 
 scenarios:
-  - name: "Create a new randomized user"
+  - name: "Create a new user"
     flow:
-      - function: "uploadRandomizedUser"    # Registers a randomized user
       - post:
-          url: "/users"
-          body: "{{ $loopback }}"          # Using randomized user from helper function
-          capture:
-            - json: "$.userId"
-              as: "userId"
-            - json: "$.pwd"
-              as: "pwd"
-      - function: "processRegisterReply"    # Processes registration response
+          url: "/users/"
+          beforeRequest: "uploadRandomizedUser"
+          afterResponse: "processRegisterReply"
+      - log: "User created with ID: {{ userId }}"
 
-  - name: "Get user by ID with password"
+  - name: "Get a user by userId and password"
     flow:
-      - function: "prepareGetUser"          # Sets userId and pwd in URL
       - get:
           url: "/users/{{ userId }}"
           qs:
             pwd: "{{ pwd }}"
+          beforeRequest: "prepareGetUser"
+      - log: "Retrieved user with ID: {{ userId }}"
 
-  - name: "Update a user by ID with password"
+  - name: "Update a user by userId and password"
     flow:
       - put:
           url: "/users/{{ userId }}"
           qs:
             pwd: "{{ pwd }}"
-          json:
-            userId: "{{ userId }}"
-            name: "Updated Test User"
-            password: "newTestPassword"
+          beforeRequest: "prepareUpdateUser"
+          afterResponse: "processUpdateReply"
+      - log: "Updated user with ID: {{ userId }}"
 
-  - name: "Delete a user by ID with password"
+  - name: "Delete a user by userId and password"
     flow:
       - delete:
           url: "/users/{{ userId }}"
           qs:
             pwd: "{{ pwd }}"
+          beforeRequest: "prepareDeleteUser"
+      - log: "Deleted user with ID: {{ userId }}"
 
-  - name: "Search users by pattern"
+  - name: "Search users by query pattern"
     flow:
       - get:
           url: "/users"
           qs:
-            query: "test"
+            query: "{{ queryPattern }}"
+          beforeRequest: "prepareSearchPattern"
+      - log: "Searched users with pattern: {{ queryPattern }}"
