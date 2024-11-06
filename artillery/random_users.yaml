@@ -27,29 +27,4 @@ scenarios:
           headers:
             Accept: application/json
           beforeRequest: "prepareGetUser" # Custom function to set the user ID
-  - name: 'Like and Follow'
-    weight: 1
-    flow:
-      - post:
-          url: "/likes/"
-          headers:
-            Content-Type: application/json
-          beforeRequest: "prepareLikeShort"
-          afterResponse: "verifyLike"
-      - post:
-          url: "/follows/"
-          headers:
-            Content-Type: application/json
-          beforeRequest: "prepareFollowUser"
-          afterResponse: "verifyFollow"
-      - get:
-          url: "/users/{{ followedUserId }}/followers"
-          headers:
-            Accept: application/json
-          afterResponse: "validateFollow"
-      - get:
-          url: "/shorts/{{ likedShortId }}/likes"
-          headers:
-            Accept: application/json
-          afterResponse: "validateLike"
   
