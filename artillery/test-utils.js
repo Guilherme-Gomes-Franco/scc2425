@@ -6,7 +6,8 @@
 module.exports = {
   uploadRandomizedUser,
   processRegisterReply,
-  prepareGetUser
+  prepareGetUser,
+  saveShortId
 }
 
 
@@ -101,37 +102,16 @@ function prepareGetUser(requestParams, context, ee, next) {
     //console.log(`Attempting to retrieve user with ID: ${user.userId}`);
     return next();
 }
-
-function generateUser(){
-    let username = randomUsername(15);
-    let pword = randomPassword(5);
-    let email = username + "@campus.fct.unl.pt";
-    let displayName = username;
-    
-    const user = {
-        userId: username,
-        pwd: pword,
-        email: email,
-        displayName: displayName
-    };
-    return user;
-}
-
-// Function to append a user to the CSV file
-function saveUserToCSV(user) {
-    const filePath = 'data/users.csv';
-    const csvLine = `${user.userId},${user.pwd},${user.email},"${user.displayName}"\n`;
-
-    // Check if file exists; if not, add the header
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, "userid,pwd,email,displayName\n", { flag: 'w' });
-    }
-
-    // Append user data to the file
-    fs.appendFileSync(filePath, csvLine, { flag: 'a' });
-}
-
-/*for( var i = 0; i < 1000; i++) {
-    var user = generateUser();
-    saveUserToCSV(user);
-}*/
+  
+  function saveShortId(requestParams, response, context, ee, next) {
+      if (response.statusCode === 200) {
+          // Assuming the response body contains the shortId in JSON format
+          // Assuming the response body contains the shortId in JSON format
+        const responseBody = JSON.parse(response.body);
+        context.vars.shortId = responseBody.shortId; // Save shortId in context
+          console.log(`Short ID saved: ${response.body}`);
+      } else {
+          console.error("Failed to create short. Response:", response.body);
+      }
+      return next();
+  }
