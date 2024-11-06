@@ -1,5 +1,5 @@
 config:
-  target: "https://tukano-scc-61052.azurewebsites.net/"  # Update this with your API base URL
+  target: "https://tukano-scc-61052.azurewebsites.net/rest"  # Update this with your API base URL
   plugins:
     metrics-by-endpoint: {}
   phases:
