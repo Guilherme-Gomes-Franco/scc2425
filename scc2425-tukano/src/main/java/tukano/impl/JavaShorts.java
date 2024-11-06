@@ -30,7 +30,7 @@ import utils.RedisCache;
 
 public class JavaShorts implements Shorts {
 
-	private String LIKES_KEY = "likes";
+	private String LIKES_KEY = "likes:";
 
 	private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
