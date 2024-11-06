@@ -1,5 +1,5 @@
 config:
-  target: "http://127.0.0.1:8080/tukano/rest" 
+  target: "https://tukano-scc-61052.azurewebsites.net/" 
   plugins:
     metrics-by-endpoint: {}        # Enables per-endpoint metrics aggregation
   phases:
