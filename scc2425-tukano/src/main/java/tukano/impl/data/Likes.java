@@ -32,7 +32,7 @@ public class Likes {
 		this.userId = userId;
 		this.shortId = shortId;
 		this.ownerId = ownerId;
-		this.id = userId + "-" + shortId;
+		this.id = "likes:"+userId + ":" + shortId;
 	}
 
 	public String getUserId() {
