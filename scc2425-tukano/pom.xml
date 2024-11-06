@@ -69,10 +69,10 @@
 				<version>2.13.0</version>
 			    <configuration>
 			        <schemaVersion>v2</schemaVersion>
-			        <resourceGroup>tukano-1730649927461-rg</resourceGroup>
-			        <appName>tukano-1730649927461</appName>
+			        <resourceGroup>tukano-scc-61052</resourceGroup>
+			        <appName>tukano-scc-61052</appName>
 			        <pricingTier>F1</pricingTier>
-			        <region>centralus</region>
+			        <region>westeurope</region>
 			        <runtime>
 			            <os>Linux</os>
 			            <javaVersion>Java 17</javaVersion>

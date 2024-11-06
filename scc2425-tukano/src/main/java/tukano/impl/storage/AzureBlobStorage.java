@@ -3,9 +3,7 @@ package tukano.impl.storage;
 import com.azure.storage.blob.models.BlobItem;
 import tukano.api.Result;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
@@ -17,16 +15,15 @@ import static tukano.api.Result.ErrorCode.CONFLICT;
 import static tukano.api.Result.error;
 import static tukano.api.Result.ok;
 import utils.Hash;
+import utils.Props;
 
 public class AzureBlobStorage implements BlobStorage {
-    private static final String STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=scc2323;AccountKey=8gfHhcOfIAtd+mZkMcYCNwW1rLYHvKvimgfplN/0PWl4ceca+qjkBUWpwJoX4bln8eRk/Nq2431j+ASt9TXmRw==;EndpointSuffix=core.windows.net";
-    private static final String BLOBS_CONTAINER_NAME = "blobs";
     private final BlobContainerClient containerClient;
 
     public AzureBlobStorage() {
         containerClient = new BlobContainerClientBuilder()
-                .connectionString(STORAGE_CONNECTION_STRING)
-                .containerName(BLOBS_CONTAINER_NAME)
+                .connectionString(Props.get("BLOB_STORE_CONNECTION"))
+                .containerName(Props.get("BLOB_CONTAINER_NAME"))
                 .buildClient();
     }
 

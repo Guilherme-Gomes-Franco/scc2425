@@ -30,7 +30,7 @@ import utils.RedisCache;
 
 public class JavaShorts implements Shorts {
 
-	private String LIKES_KEY = "likes";
+	private String LIKES_KEY = "likes:";
 
 	private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
@@ -51,15 +51,17 @@ public class JavaShorts implements Shorts {
 
 		return errorOrResult(okUser(userId, password), user -> {
 
-			var shortId = format("%s+%s", userId, UUID.randomUUID());
+			var shortId = format("%s:%s", userId, UUID.randomUUID());
 			var blobUrl = format("%s/%s/%s", TukanoRestApplication.serverURI, Blobs.NAME, shortId);
 			var shrt = new Short(shortId, userId, blobUrl);
 
-			Result<Short> res = errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
+			shrt = shrt.copyWithLikes_And_Token(0);
+
+			Result<Short> res = DB.insertOne(shrt);
 			try (var jedis = RedisCache.getCachePool().getResource()) {
 				if (res.isOK()) {
-					jedis.setex(shortId, 100, JSON.encode(res.value()));
-					jedis.setex(LIKES_KEY + shortId, 100, "0");
+					jedis.setex(shortId, 10, JSON.encode(res.value()));
+					jedis.setex(LIKES_KEY + shortId, 10, "0");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -75,13 +77,18 @@ public class JavaShorts implements Shorts {
 		if (shortId == null)
 			return error(BAD_REQUEST);
 		GetExParams exParams = new GetExParams();
-		var query = format("SELECT count(*) FROM Likes l WHERE l.shortId = '%s'", shortId);
+		String query = format("SELECT VALUE COUNT(1) FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
+
+		if (DB.USE_POSTGRES)
+			query = format("SELECT count(*) FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(shortId)) {
-				Short shrt = JSON.decode(jedis.getEx(shortId, exParams.ex(100)), Short.class);
+				Short shrt = JSON.decode(jedis.get(shortId), Short.class);
+				jedis.expire(shortId, 10);
 				if (jedis.exists(LIKES_KEY + shortId)) {
-					String likes = jedis.getEx(LIKES_KEY + shortId, exParams.ex(100));
+					String likes = jedis.get(LIKES_KEY + shortId);
+					jedis.expire(LIKES_KEY + shortId, 10);
 					return ok(shrt.copyWithLikes_And_Token(Integer.parseInt(likes)));
 				} else {
 					var likes = DB.sql(query, Long.class);
@@ -92,7 +99,21 @@ public class JavaShorts implements Shorts {
 			e.printStackTrace();
 		}
 		var likes = DB.sql(query, Long.class);
-		return errorOrValue(getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.value().get(0)));
+		Log.info(() -> format("getShort : likes = %s\n", likes));
+		var res = errorOrValue(getOne(shortId, Short.class), shrt -> shrt.copyWithLikes_And_Token(likes.value().get(0)));
+
+		Log.info(() -> format("getShort : res = %s\n", getOne(shortId, Short.class).value()));
+
+		if (res.isOK()) {
+			try (var jedis = RedisCache.getCachePool().getResource()) {
+				jedis.setex(shortId, 10, JSON.encode(res.value()));
+				jedis.setex(LIKES_KEY + shortId, 10, String.valueOf(likes.value().get(0)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return res;
 	}
 
 	@Override
@@ -100,6 +121,21 @@ public class JavaShorts implements Shorts {
 		Log.info(() -> format("deleteShort : shortId = %s, pwd = %s\n", shortId, password));
 
 		return errorOrResult(getShort(shortId), shrt -> {
+			Log.info(() -> format("will attempt to delete blob from short: %s", shrt));
+
+			// Regular expression to capture the parts before and after "?token="
+			String regex = ".*/blobs/([^?]+)\\?token=([^&]+)";
+			java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(regex);
+			java.util.regex.Matcher matcher = pattern.matcher(shrt.getBlobUrl());
+
+			String blobToken, blobId;
+			if (matcher.find()) {
+				blobId = matcher.group(1);  // Part before "?token="
+				blobToken = matcher.group(2);  // Token value after "?token="
+			} else {
+                blobToken = "";
+                blobId = "";
+			}
 
 			return errorOrResult(okUser(shrt.getOwnerId(), password), user -> {
 				try (var jedis = RedisCache.getCachePool().getResource()) {
@@ -110,10 +146,10 @@ public class JavaShorts implements Shorts {
 				return DB.transaction(dbSession -> {
 					dbSession.remove(shrt);
 
-					String query = String.format("DELETE FROM Likes l WHERE l.shortId = '%s'", shortId);
+					String query = String.format("DELETE FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 					dbSession.executeUpdate(query, Likes.class);
 
-					JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get());
+					JavaBlobs.getInstance().delete(blobId, blobToken);
 				});
 			});
 		});
@@ -123,7 +159,7 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> getShorts(String userId) {
 		Log.info(() -> format("getShorts : userId = %s\n", userId));
 
-		var query = format("SELECT s.shortId FROM Short s WHERE s.ownerId = '%s'", userId);
+		var query = format("SELECT s.shortId FROM Short s WHERE s.id = l.id LIKE '%%short:%%%%%s%%'", userId);
 		return errorOrValue(okUser(userId), DB.sql(query, String.class));
 	}
 
@@ -142,7 +178,7 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> followers(String userId, String password) {
 		Log.info(() -> format("followers : userId = %s, pwd = %s\n", userId, password));
 
-		var query = format("SELECT f.follower FROM Following f WHERE f.followee = '%s'", userId);
+		var query = format("SELECT f.follower FROM Following f WHERE f.id LIKE '%%following:%%:%%%s%%'", userId);
 		return errorOrValue(okUser(userId, password), DB.sql(query, String.class));
 	}
 
@@ -163,7 +199,7 @@ public class JavaShorts implements Shorts {
 
 		return errorOrResult(getShort(shortId), shrt -> {
 
-			var query = format("SELECT l.userId FROM Likes l WHERE l.shortId = '%s'", shortId);
+			var query = format("SELECT l.userId FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 
 			return errorOrValue(okUser(shrt.getOwnerId(), password), DB.sql(query, String.class));
 		});
@@ -174,14 +210,13 @@ public class JavaShorts implements Shorts {
 		Log.info(() -> format("getFeed : userId = %s, pwd = %s\n", userId, password));
 
 		final var QUERY_FMT = """
-				SELECT s.shortId, s.timestamp FROM Short s WHERE	s.ownerId = '%s'
+				SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%short:%%%%%s%%'
 				UNION
-				SELECT s.shortId, s.timestamp FROM Short s, Following f
-					WHERE
-						f.followee = s.ownerId AND f.follower = '%s'
-				ORDER BY s.timestamp DESC""";
+				SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%following:%%%s%%' AND s.id LIKE '%%short:%%%%%s%%'
+				ORDER BY s.timestamp DESC
+				""";
 
-		return errorOrValue(okUser(userId, password), DB.sql(format(QUERY_FMT, userId, userId), String.class));
+		return errorOrValue(okUser(userId, password), DB.sql(format(QUERY_FMT, userId, userId, userId), String.class));
 	}
 
 	protected Result<UserImp> okUser(String userId, String pwd) {
@@ -206,15 +241,15 @@ public class JavaShorts implements Shorts {
 		return DB.transaction(dbSession -> {
 
 			// delete shorts
-			var query1 = format("DELETE FROM Short s WHERE s.ownerId = '%s'", userId);
+			var query1 = String.format("DELETE FROM Short s WHERE s.id LIKE '%%short:%%%s%%'", userId);
 			dbSession.executeUpdate(query1, Short.class);
 
 			// delete follows
-			var query2 = format("DELETE FROM Following f WHERE f.follower = '%s' OR f.followee = '%s'", userId, userId);
+			var query2 = String.format("DELETE FROM Following f WHERE f.id LIKE '%%following:%s:%%' OR f.id LIKE '%%following:%%%s'", userId, userId);
 			dbSession.executeUpdate(query2, Following.class);
 
 			// delete likes
-			var query3 = format("DELETE FROM Likes l WHERE l.ownerId = '%s' OR l.userId = '%s'", userId, userId);
+			var query3 = String.format("DELETE FROM Likes l WHERE l.id LIKE '%%likes:%s:%%' OR l.id LIKE '%%likes:%%%s%%'", userId, userId);
 			dbSession.executeUpdate(query3, Likes.class);
 
 		});

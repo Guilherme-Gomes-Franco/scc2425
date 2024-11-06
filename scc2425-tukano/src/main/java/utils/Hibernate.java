@@ -1,8 +1,5 @@
 package utils;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,15 +22,12 @@ import tukano.api.Result.ErrorCode;
 public class Hibernate {
 //	private static Logger Log = Logger.getLogger(Hibernate.class.getName());
 
-	private static final String HIBERNATE_CFG_FILE = "webapps/tukano/WEB-INF/hibernate.cfg.xml";
-	//private static final String HIBERNATE_CFG_FILE = "hibernate.cfg.xml";
 	private SessionFactory sessionFactory;
 	private static Hibernate instance;
 
 	private Hibernate() {
 		try {
-			sessionFactory = new Configuration().configure(new File(HIBERNATE_CFG_FILE)).buildSessionFactory();
-
+			sessionFactory = new Configuration().configure().buildSessionFactory();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

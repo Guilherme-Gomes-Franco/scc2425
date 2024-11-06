@@ -5,6 +5,7 @@ import jakarta.ws.rs.core.Application;
 import java.util.Set;
 import java.util.HashSet;
 import utils.IP;
+import utils.Props;
 
 public class TukanoRestApplication extends Application {
 
@@ -17,6 +18,8 @@ public class TukanoRestApplication extends Application {
 
 	public TukanoRestApplication() {
 		serverURI = String.format(SERVER_BASE_URI, 	IP.hostname(), PORT);
+
+		Props.load("azurekeys-region.props");
 
 		resources.add(RestBlobsResource.class);
 		resources.add(RestShortsResource.class);

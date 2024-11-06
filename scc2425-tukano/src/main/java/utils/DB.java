@@ -11,20 +11,13 @@ import tukano.impl.data.Likes;
 
 public class DB {
 
-	private static final boolean USE_POSTGRES = true;
+	public static final boolean USE_POSTGRES = false;
 
 	public static <T> Result<List<T>> sql(String query, Class<T> clazz) {
 		if (USE_POSTGRES)
 			return Hibernate.getInstance().sql(query, clazz);
 		else
 			return CosmosDBLayer.getInstance().query(clazz, query);
-	}
-
-	public static <T> Result<List<T>> sql(Class<T> clazz, String fmt, Object... args) {
-		if (USE_POSTGRES)
-			return Hibernate.getInstance().sql(String.format(fmt, args), clazz);
-		else
-			return CosmosDBLayer.getInstance().query(clazz, String.format(fmt, args));
 	}
 
 	public static <T> Result<T> getOne(String id, Class<T> clazz) {
