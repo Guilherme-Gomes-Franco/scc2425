@@ -6,6 +6,7 @@ module.exports = {
     prepareGetUser,
     prepareUpdateUser,
     prepareDeleteUser,
+    processUpdateReply,
     prepareSearchPattern,
     saveShortId,
     extractBlobDetails
