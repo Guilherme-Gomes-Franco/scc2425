@@ -6,6 +6,7 @@ module.exports = {
     prepareGetUser,
     prepareUpdateUser,
     prepareDeleteUser,
+    processUpdateReply,
     prepareSearchPattern,
     saveShortId,
     extractBlobDetails
@@ -108,7 +109,7 @@ function prepareDeleteUser(requestParams, context, ee, next) {
 
 // Prepare request to search for users with a pattern
 function prepareSearchPattern(requestParams, context, ee, next) {
-    context.vars.queryPattern = "testPattern"; // Customize the pattern as needed
+    context.vars.queryPattern = "xy"; // Can be changed accordingly
     requestParams.qs = { query: context.vars.queryPattern };
 
     return next();
