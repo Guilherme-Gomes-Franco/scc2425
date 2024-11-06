@@ -20,13 +20,6 @@ public class DB {
 			return CosmosDBLayer.getInstance().query(clazz, query);
 	}
 
-	public static <T> Result<List<T>> sql(Class<T> clazz, String fmt, Object... args) {
-		if (USE_POSTGRES)
-			return Hibernate.getInstance().sql(String.format(fmt, args), clazz);
-		else
-			return CosmosDBLayer.getInstance().query(clazz, String.format(fmt, args));
-	}
-
 	public static <T> Result<T> getOne(String id, Class<T> clazz) {
 		if (USE_POSTGRES)
 			return Hibernate.getInstance().getOne(id, clazz);
