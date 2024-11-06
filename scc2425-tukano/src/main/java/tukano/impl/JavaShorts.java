@@ -75,7 +75,10 @@ public class JavaShorts implements Shorts {
 		if (shortId == null)
 			return error(BAD_REQUEST);
 		GetExParams exParams = new GetExParams();
-		var query = format("SELECT count(*) FROM Likes l WHERE l.shortId = '%s'", shortId);
+		String query = format("SELECT VALUE COUNT(1) FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
+
+		if (DB.USE_POSTGRES)
+			query = format("SELECT count(*) FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(shortId)) {
@@ -110,7 +113,7 @@ public class JavaShorts implements Shorts {
 				return DB.transaction(dbSession -> {
                     dbSession.remove(shrt);
 
-					String query = String.format("DELETE FROM Likes l WHERE l.shortId = '%s'", shortId);
+					String query = String.format("DELETE FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 					dbSession.executeUpdate(query, Likes.class);
 
 					JavaBlobs.getInstance().delete(shrt.getBlobUrl(), Token.get());
@@ -123,7 +126,7 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> getShorts(String userId) {
 		Log.info(() -> format("getShorts : userId = %s\n", userId));
 
-		var query = format("SELECT s.shortId FROM Short s WHERE s.ownerId = '%s'", userId);
+		var query = format("SELECT s.shortId FROM Short s WHERE s.id = l.id LIKE '%%short:%%%%%s%%'", userId);
 		return errorOrValue(okUser(userId), DB.sql(query, String.class));
 	}
 
@@ -142,7 +145,7 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> followers(String userId, String password) {
 		Log.info(() -> format("followers : userId = %s, pwd = %s\n", userId, password));
 
-		var query = format("SELECT f.follower FROM Following f WHERE f.followee = '%s'", userId);
+		var query = format("SELECT f.follower FROM Following f WHERE f.id LIKE '%%following:%%:%%%s%%'", userId);
 		return errorOrValue(okUser(userId, password), DB.sql(query, String.class));
 	}
 
@@ -163,7 +166,7 @@ public class JavaShorts implements Shorts {
 
 		return errorOrResult(getShort(shortId), shrt -> {
 
-			var query = format("SELECT l.userId FROM Likes l WHERE l.shortId = '%s'", shortId);
+			var query = format("SELECT l.userId FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 
 			return errorOrValue(okUser(shrt.getOwnerId(), password), DB.sql(query, String.class));
 		});
@@ -174,14 +177,13 @@ public class JavaShorts implements Shorts {
 		Log.info(() -> format("getFeed : userId = %s, pwd = %s\n", userId, password));
 
 		final var QUERY_FMT = """
-				SELECT s.shortId, s.timestamp FROM Short s WHERE	s.ownerId = '%s'
+				SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%short:%%%%%s%%'
 				UNION
-				SELECT s.shortId, s.timestamp FROM Short s, Following f
-					WHERE
-						f.followee = s.ownerId AND f.follower = '%s'
-				ORDER BY s.timestamp DESC""";
+				SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%following:%%%s%%' AND s.id LIKE '%%short:%%%%%s%%'
+				ORDER BY s.timestamp DESC
+				""";
 
-		return errorOrValue(okUser(userId, password), DB.sql(format(QUERY_FMT, userId, userId), String.class));
+		return errorOrValue(okUser(userId, password), DB.sql(format(QUERY_FMT, userId, userId, userId), String.class));
 	}
 
 	protected Result<UserImp> okUser(String userId, String pwd) {
@@ -206,15 +208,15 @@ public class JavaShorts implements Shorts {
 		return DB.transaction(dbSession -> {
 
 			// delete shorts
-			var query1 = format("DELETE FROM Short s WHERE s.ownerId = '%s'", userId);
+			var query1 = String.format("DELETE FROM Short s WHERE s.id LIKE '%%short:%%%s%%'", userId);
 			dbSession.executeUpdate(query1, Short.class);
 
 			// delete follows
-			var query2 = format("DELETE FROM Following f WHERE f.follower = '%s' OR f.followee = '%s'", userId, userId);
+			var query2 = String.format("DELETE FROM Following f WHERE f.id LIKE '%%following:%s:%%' OR f.id LIKE '%%following:%%%s'", userId, userId);
 			dbSession.executeUpdate(query2, Following.class);
 
 			// delete likes
-			var query3 = format("DELETE FROM Likes l WHERE l.ownerId = '%s' OR l.userId = '%s'", userId, userId);
+			var query3 = String.format("DELETE FROM Likes l WHERE l.id LIKE '%%likes:%s:%%' OR l.id LIKE '%%likes:%%%s%%'", userId, userId);
 			dbSession.executeUpdate(query3, Likes.class);
 
 		});
