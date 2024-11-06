@@ -84,9 +84,9 @@ public class JavaShorts implements Shorts {
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
 			if (jedis.exists(shortId)) {
-				Short shrt = JSON.decode(jedis.getEx(shortId, exParams.ex(100)), Short.class);
+				Short shrt = JSON.decode(jedis.get(shortId), Short.class);
 				if (jedis.exists(LIKES_KEY + shortId)) {
-					String likes = jedis.getEx(LIKES_KEY + shortId, exParams.ex(100));
+					String likes = jedis.get(LIKES_KEY + shortId);
 					return ok(shrt.copyWithLikes_And_Token(Integer.parseInt(likes)));
 				} else {
 					var likes = DB.sql(query, Long.class);
