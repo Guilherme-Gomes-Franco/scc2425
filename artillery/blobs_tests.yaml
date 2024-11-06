@@ -1,0 +1,77 @@
+config:
+  target: "https://tukano-scc-61052.azurewebsites.net/rest"  # Update this with your API base URL
+  plugins:
+    metrics-by-endpoint: {}
+  phases:
+    - duration: 60
+      arrivalRate: 5
+  processor: "./helpers.js"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Create a new user"
+    flow:
+      - function: "uploadRandomizedUser"
+      - post:
+          url: "/users"
+          body: "{{ $loopback }}"
+          capture:
+            - json: "$.userId"
+              as: "userId"
+            - json: "$.pwd"
+              as: "pwd"
+      - function: "processRegisterReply"
+
+  - name: "Create a short and get blobUrl"
+    flow:
+      - post:
+          url: "/shorts/{{ userId }}"
+          qs:
+            pwd: "{{ pwd }}"
+          capture:
+            - json: "$.shortId"
+              as: "shortId"
+            - json: "$.blobUrl"
+              as: "blobUrl"
+      - function: "extractBlobDetails"
+      - log: "Created short with blobUrl: {{ blobUrl }} and extracted blobId: {{ blobId }}, token: {{ token }}"
+
+  - name: "Upload blob data for the created short"
+    flow:
+      - post:
+          url: "/blobs/{{ blobId }}"
+          headers:
+            Content-Type: "application/octet-stream"
+          qs:
+            token: "{{ token }}"
+          body: "RANDOM"  # Sends random data as binary
+      - log: "Uploaded blob data for blobId: {{ blobId }} with token: {{ token }}"
+
+  - name: "Download and verify blob data"
+    flow:
+      - get:
+          url: "/blobs/{{ blobId }}"
+          qs:
+            token: "{{ token }}"
+          capture:
+            - json: "$"
+              as: "downloadedBlobData"
+      - log: "Downloaded blob data: {{ downloadedBlobData }} for blobId: {{ blobId }}"
+
+  - name: "Delete a blob by ID"
+    flow:
+      - delete:
+          url: "/blobs/{{ blobId }}"
+          qs:
+            token: "{{ token }}"
+      - log: "Deleted blob with blobId: {{ blobId }} and token: {{ token }}"
+
+  - name: "Delete all blobs for a user"
+    flow:
+      - delete:
+          url: "/blobs/{{ userId }}/blobs"
+          qs:
+            token: "{{ token }}"
+      - log: "Deleted all blobs for userId: {{ userId }} with token: {{ token }}"

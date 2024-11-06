@@ -140,7 +140,7 @@ public class JavaShorts implements Shorts {
 					e.printStackTrace();
 				}
 				return DB.transaction(dbSession -> {
-                    dbSession.remove(shrt);
+					dbSession.remove(shrt);
 
 					String query = String.format("DELETE FROM Likes l WHERE l.id LIKE '%%likes:%%%%%s%%'", shortId);
 					dbSession.executeUpdate(query, Likes.class);
