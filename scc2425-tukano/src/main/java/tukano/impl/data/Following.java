@@ -19,7 +19,7 @@ public class Following{
 
 	public Following(String follower, String followee) {
 		super();
-		this.id = follower+"_"+followee;
+		this.id = "following:"+follower+":"+followee;
 		this.follower = follower;
 		this.followee = followee;
 	}
