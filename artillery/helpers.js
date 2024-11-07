@@ -8,14 +8,35 @@ module.exports = {
     prepareDeleteUser,
     processUpdateReply,
     prepareSearchPattern,
-    saveShortId,
+    saveShort,
+    prepareCreateShort,
+    prepareGetShort,
+    prepareAddLike,
+    processLike,
     extractBlobDetails
 };
 
 const fs = require('fs');
 
-var registeredUsers = [];
-var users = [];
+var registeredUsers = {};
+var registeredShorts = {};
+
+// All endpoints starting with the following prefixes will be aggregated in the same for the statistics
+var statsPrefix = [["/rest/media/", "GET"],
+["/rest/media", "POST"]
+["/rest/media", "DELETE"],
+["/rest/media", "PUT"]
+]
+
+// Function used to compress statistics
+global.myProcessEndpoint = function (str, method) {
+    var i = 0;
+    for (i = 0; i < statsPrefix.length; i++) {
+        if (str.startsWith(statsPrefix[i][0]) && method == statsPrefix[i][1])
+            return method + ":" + statsPrefix[i][0];
+    }
+    return method + ":" + str;
+}
 
 
 function randomUsername(charLimit) {
@@ -28,13 +49,13 @@ function randomUsername(charLimit) {
 }
 
 // Returns a random password, drawn from printable ASCII characters
-function randomPassword(pass_len){
+function randomPassword(pass_len) {
     const skip_value = 33;
     const lim_values = 94;
-    
+
     let password = '';
     for (let i = 0; i < pass_len; i++) {
-        let chosen_char =  Math.floor(Math.random() * lim_values) + skip_value;
+        let chosen_char = Math.floor(Math.random() * lim_values) + skip_value;
         if (chosen_char == "'" || chosen_char == '"')
             i -= 1;
         else
@@ -44,16 +65,15 @@ function randomPassword(pass_len){
 }
 
 function processRegisterReply(requestParams, response, context, ee, next) {
-    if (response.body && response.body.length > 0) {
-        registeredUsers.push(response.body);
+    if (typeof response.body !== 'undefined' && response.body.length > 0) {
+        registeredUsers[response.body.userId] = response.body;
     }
     return next();
 }
 
 function processUpdateReply(requestParams, response, context, ee, next) {
-    if (response.body && response.body.length > 0) {
-        // Add the updated user data to a list, similar to how registered users are tracked
-        registeredUsers.push(response.body);
+    if (typeof response.body !== 'undefined' && response.body.length > 0) {
+        registeredUsers[response.body.userId] = response.body;
     }
     return next();
 }
@@ -67,7 +87,6 @@ function uploadRandomizedUser(requestParams, context, ee, next) {
         email: username + "@example.com",
         displayName: username
     });
-    users.push({ userId: username, pwd: password, email: username + "@example.com", displayName: username });
     return next();
 }
 
@@ -80,7 +99,7 @@ function prepareGetUser(requestParams, context, ee, next) {
 
 // Prepare request to update a specific user
 function prepareUpdateUser(requestParams, context, ee, next) {
-    const user = users[getRandomUserIndex()];
+    const user = registeredUsers[getRandomUserIndex()];
 
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
     requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
@@ -97,7 +116,7 @@ function prepareUpdateUser(requestParams, context, ee, next) {
 // Prepare request to delete a specific user
 function prepareDeleteUser(requestParams, context, ee, next) {
     //const user = users.find(u => u.userId === context.vars.userId);
-    const user = users[getRandomUserIndex()];
+    const user = registeredUsers[getRandomUserIndex()];
 
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
     requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
@@ -107,19 +126,43 @@ function prepareDeleteUser(requestParams, context, ee, next) {
 
 // Prepare request to search for users with a pattern
 function prepareSearchPattern(requestParams, context, ee, next) {
-   // context.vars.queryPattern = "testPattern"; // Customize the pattern as needed
+    // context.vars.queryPattern = "testPattern"; // Customize the pattern as needed
     requestParams.url = requestParams.url.replace('{{ queryPattern }}', "xy");
 
     return next();
 }
 
-function saveShortId(requestParams, response, context, ee, next) {
-    if (response.statusCode === 200) {
-        const responseBody = JSON.parse(response.body);
-        context.vars.shortId = responseBody.shortId;
-        console.log(`Short ID saved: ${response.body}`);
-    } else {
-        console.error("Failed to create short. Response:", response.body);
+function prepareCreateShort(requestParams, context, ee, next) {
+    const user = registeredUsers[getRandomUserIndex()];
+    requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
+    return next();
+}
+
+function saveShort(requestParams, response, context, ee, next) {
+    if (typeof response.body !== 'undefined' && response.body.length > 0) {
+        registeredShorts[response.body.shortId] = response.body;
+    }
+    requestParams.log = requestParams.log.replace('{{ blobUrl }}', response.body.blobUrl);
+    return next();
+}
+
+function prepareGetShort(requestParams, context, ee, next) {
+    const short = registeredShorts[getRandomShortIndex()];
+    requestParams.url = requestParams.url.replace('{{ shortId }}', short.shortId);
+    return next();
+}
+
+function prepareAddLike(requestParams, context, ee, next) {
+    const short = registeredShorts[getRandomShortIndex()];
+    requestParams.url = requestParams.url.replace('{{ shortId }}', short.shortId);
+    requestParams.url = requestParams.url.replace('{{ userId }}', short.ownerId);
+    requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
+    return next();
+}
+
+function processLike(requestParams, response, context, ee, next) {
+    if (typeof response.body !== 'undefined' && response.body.length > 0) {
+        registeredUsers.push(response.body);
     }
     return next();
 }
@@ -135,6 +178,10 @@ function extractBlobDetails(requestParams, response, context, ee, next) {
     return next();
 }
 
-function getRandomUserIndex() {
-    return Math.floor(Math.random() * users.length);
+function getRandomUserKey() {
+    return Math.floor(Math.random() * registeredUsers.length);
+}
+
+function getRandomShortKey() {
+    return Math.floor(Math.random() * registeredShorts.length);
 }

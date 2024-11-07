@@ -1,0 +1,84 @@
+config:
+  target: "https://tukano-scc-61052.azurewebsites.net/rest"  # Update this with your API base URL
+  plugins:
+    metrics-by-endpoint: {}
+  phases:
+    - name: "Warm up"    # WARM UP PHASE: duration: 10s, starting with 1 new client/sec up to 5 new clients/sec
+    duration: 10
+    arrivalRate: 1
+    rampTo: 5
+  - name: "Main test"
+    duration: 60
+    arrivalRate: 5
+  processor: "./helpers.js"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+   - name: "Create a new user"
+   # weight: 1
+    flow:
+      - post:
+          url: "/users/"
+          beforeRequest: "uploadRandomizedUser"
+          afterResponse: "processRegisterReply"
+
+  - name: "Create a short for user and check blobUrl"
+    flow:
+      - post:
+          url: "/shorts/{{ userId }}" 
+          beforeResponse: "prepareCreateShort"
+          afterResponse: "saveShort"
+          log: "Created short with blobUrl: {{ blobUrl }}"
+
+  - name: "Get a short by shortId"
+  flow:
+    - get:
+        url: "/shorts/{{ shortId }}"
+        beforeRequest: "prepareGetShort"
+
+  - name: "Like a short"
+    flow:
+      - post:
+          url: "/shorts/{{ shortId }}/{{ userId }}/likes?pwd={{ pwd }"
+          beforeRequest: "prepareGetLike"
+          afterRequest: "processLike"
+
+  - name: "Follow a user"
+    flow:
+      - post:
+          url: "/shorts/{{ userId }}/{{ userId2 }}/followers"
+          qs:
+            pwd: "{{ pwd }}"
+          json:
+            isFollowing: true
+
+  - name: "Get followers for a user"
+    flow:
+      - get:
+          url: "/shorts/{{ userId }}/followers"
+          qs:
+            pwd: "{{ pwd }}"
+
+  - name: "Get feed for a user"
+    flow:
+      - get:
+          url: "/shorts/{{ userId }}/feed"
+          qs:
+            pwd: "{{ pwd }}"
+
+  - name: "Delete a short by ID"
+    flow:
+      - delete:
+          url: "/shorts/{{ shortId }}"
+          qs:
+            pwd: "{{ pwd }}"
+
+  - name: "Delete all shorts for a user"
+    flow:
+      - delete:
+          url: "/shorts/{{ userId }}/shorts"
+          qs:
+            pwd: "{{ pwd }}"
+            token: "exampleToken123"

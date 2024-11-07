@@ -10,7 +10,7 @@ config:
     rampTo: 5
   - name: "Main test"  
     duration: 30
-    arrivalRate: 20
+    arrivalRate: 10
   processor: "./helpers.js"         # Path to the JavaScript helper file
   defaults:
     headers:
