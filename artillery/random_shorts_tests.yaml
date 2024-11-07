@@ -43,14 +43,15 @@ scenarios:
       - post:
           url: "/shorts/{{ shortId }}/{{ userId }}/likes?pwd={{ pwd }"
           beforeRequest: "prepareGetLike"
+          json:
+            isLiked: true
           afterRequest: "processLike"
+          
 
   - name: "Follow a user"
     flow:
       - post:
-          url: "/shorts/{{ userId }}/{{ userId2 }}/followers"
-          qs:
-            pwd: "{{ pwd }}"
+          url: "/shorts/{{ userId }}/{{ userId2 }}/followers?pwd={{ pwd }"
           json:
             isFollowing: true
 

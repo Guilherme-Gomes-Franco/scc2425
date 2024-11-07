@@ -154,8 +154,9 @@ function prepareGetShort(requestParams, context, ee, next) {
 
 function prepareAddLike(requestParams, context, ee, next) {
     const short = registeredShorts[getRandomShortIndex()];
+    const user = registeredUsers[getRandomUserIndex()];
     requestParams.url = requestParams.url.replace('{{ shortId }}', short.shortId);
-    requestParams.url = requestParams.url.replace('{{ userId }}', short.ownerId);
+    requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
     requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
     return next();
 }
@@ -178,10 +179,10 @@ function extractBlobDetails(requestParams, response, context, ee, next) {
     return next();
 }
 
-function getRandomUserKey() {
+function getRandomUserIndex() {
     return Math.floor(Math.random() * registeredUsers.length);
 }
 
-function getRandomShortKey() {
+function getRandomShortIndex() {
     return Math.floor(Math.random() * registeredShorts.length);
 }
