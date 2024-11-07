@@ -51,7 +51,7 @@ public class JavaShorts implements Shorts {
 
 		return errorOrResult(okUser(userId, password), user -> {
 
-			var shortId = format("%s:%s", userId, UUID.randomUUID());
+			var shortId = format("short:%s:%s", userId, UUID.randomUUID());
 			var blobUrl = format("%s/%s/%s", TukanoRestApplication.serverURI, Blobs.NAME, shortId);
 			var shrt = new Short(shortId, userId, blobUrl);
 
@@ -205,6 +205,7 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> getFeed(String userId, String password) {
 		Log.info(() -> format("getFeed : userId = %s, pwd = %s\n", userId, password));
 
+		//TODO: This query is not correct. It should be fixed.
 		final var QUERY_FMT = """
 				SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%short:%%%%%s%%'
 				UNION

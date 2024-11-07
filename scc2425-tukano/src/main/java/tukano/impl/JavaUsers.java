@@ -50,7 +50,11 @@ public class JavaUsers implements Users {
 			if (res.isOK())
 				jedis.setex(user.getUserId(), 10, JSON.encode(user));
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (e.getMessage() != null && e.getMessage().contains("404")) {
+				//System.out.println("Error 404 detected in exception message.");
+			}
+			else
+				e.printStackTrace();
 		}
 		return res;
 	}
@@ -69,7 +73,11 @@ public class JavaUsers implements Users {
 				return validatedUserOrError(Result.ok(user), pwd);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (e.getMessage() != null && e.getMessage().contains("404")) {
+				//System.out.println("Error 404 detected in exception message.");
+			}
+			else
+				e.printStackTrace();
 		}
 		Result<UserImp> res = validatedUserOrError(DB.getOne(userId, UserImp.class), pwd);
 		try {
@@ -78,7 +86,11 @@ public class JavaUsers implements Users {
 				jedis.setex(userId, 10, JSON.encode(res.value()));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (e.getMessage() != null && e.getMessage().contains("404")) {
+				//System.out.println("Error 404 detected in exception message.");
+			}
+			else
+				e.printStackTrace();
 		}
 		return res;
 	}
@@ -109,7 +121,11 @@ public class JavaUsers implements Users {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (e.getMessage() != null && e.getMessage().contains("404")) {
+				//System.out.println("Error 404 detected in exception message.");
+			}
+			else
+				e.printStackTrace();
 		}
 
 		return errorOrResult(validatedUserOrError(DB.getOne(userId, UserImp.class), pwd),
@@ -120,7 +136,7 @@ public class JavaUsers implements Users {
 	public Result<UserImp> deleteUser(String userId, String pwd) {
 		Log.info(() -> format("deleteUser : userId = %s, pwd = %s\n", userId, pwd));
 
-		if (userId == null || pwd == null)
+		if (userId == null || pwd == null || userId.isEmpty() || pwd.isEmpty())
 			return error(BAD_REQUEST);
 
 		try (var jedis = RedisCache.getCachePool().getResource()) {
@@ -144,7 +160,11 @@ public class JavaUsers implements Users {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (e.getMessage() != null && e.getMessage().contains("404")) {
+				//System.out.println("Error 404 detected in exception message.");
+			}
+			else
+				e.printStackTrace();
 		}
 
 		var userr = DB.getOne(userId, UserImp.class);
@@ -191,6 +211,8 @@ public class JavaUsers implements Users {
 	}
 
 	private boolean badUpdateUserInfo(String userId, String pwd, UserImp info) {
-		return (userId == null || pwd == null || info.getUserId() != null && !userId.equals(info.getUserId()));
+		return (userId == null || userId.isEmpty() ||
+				pwd == null || pwd.isEmpty() ||
+				info.getUserId() != null && !userId.equals(info.getUserId()));
 	}
 }

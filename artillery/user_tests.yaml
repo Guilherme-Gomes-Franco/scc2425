@@ -32,7 +32,6 @@ scenarios:
       - get:
           url: "/users/{{ userId }}?pwd={{ pwd }}"
           beforeRequest: "prepareGetUser"
-      - log: "Retrieved user with ID: {{ userId }}"
 
   - name: "Update a user by userId and password"
     flow:

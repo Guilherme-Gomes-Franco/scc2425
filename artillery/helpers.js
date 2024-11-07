@@ -17,19 +17,6 @@ const fs = require('fs');
 var registeredUsers = [];
 var users = [];
 
-var statsPrefix = [
-    ["/rest/media/", "GET"],
-    ["/rest/media", "POST"]
-];
-
-global.myProcessEndpoint = function (str, method) {
-    for (let i = 0; i < statsPrefix.length; i++) {
-        if (str.startsWith(statsPrefix[i][0]) && method === statsPrefix[i][1]) {
-            return method + ":" + statsPrefix[i][0];
-        }
-    }
-    return method + ":" + str;
-};
 
 function randomUsername(charLimit) {
     const letters = 'abcdefghijklmnopqrstuvwxyz';
@@ -77,10 +64,10 @@ function uploadRandomizedUser(requestParams, context, ee, next) {
     requestParams.body = JSON.stringify({
         userId: username,
         pwd: password,
-        email: `${username}@example.com`,
+        email: username + "@example.com",
         displayName: username
     });
-    users.push({ userId: username, pwd: password });
+    users.push({ userId: username, pwd: password, email: username + "@example.com", displayName: username });
     return next();
 }
 
@@ -97,7 +84,12 @@ function prepareUpdateUser(requestParams, context, ee, next) {
 
     requestParams.url = requestParams.url.replace('{{ userId }}', user.userId);
     requestParams.url = requestParams.url.replace('{{ pwd }}', user.pwd);
-    requestParams.json = { ...user, displayName: `Updated_${user.displayName}` };
+    requestParams.body = JSON.stringify({
+        userId: user.userId,
+        pwd: user.pwd,
+        email: user.email,
+        displayName: "updated_" + user.displayName
+    });
 
     return next();
 }
