@@ -17,7 +17,7 @@ public class DB {
 		if (USE_POSTGRES)
 			return Hibernate.getInstance().sql(query, clazz);
 		else
-			return CosmosDBLayer.getInstance().query(clazz, query);
+			return CosmosDBLayer.getInstance().query(clazz, query.replace("'", "\""));
 	}
 
 	public static <T> Result<T> getOne(String id, Class<T> clazz) {
