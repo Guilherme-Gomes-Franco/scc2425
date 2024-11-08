@@ -65,7 +65,7 @@ public class HttpTriggerJava {
      * 2. curl {your host}/api/HttpTriggerJava?name=HTTP%20Query
      */
     @FunctionName("update_views")
-    public HttpResponseMessage run(
+    public synchronized HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
