@@ -187,7 +187,7 @@ public class JavaUsers implements Users {
 
 	@Override
 	public Result<List<UserImp>> searchUsers(String pattern) {
-		Log.info(() -> format("searchUsers : patterns = %s\n", pattern));
+		Log.info(() -> format("searchUsers : pattern = %s\n", pattern));
 		var query = format("SELECT * FROM UserImp u WHERE UPPER(u.userId) LIKE '%%%s%%'", pattern.toUpperCase());
 		var hits = DB.sql(query, UserImp.class).value()
 				.stream()
