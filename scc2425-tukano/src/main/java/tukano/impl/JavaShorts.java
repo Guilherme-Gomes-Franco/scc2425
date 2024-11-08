@@ -1,26 +1,24 @@
 package tukano.impl;
 
 import static java.lang.String.format;
+import static tukano.api.Result.ErrorCode.*;
 import static tukano.api.Result.error;
 import static tukano.api.Result.errorOrResult;
 import static tukano.api.Result.errorOrValue;
 import static tukano.api.Result.errorOrVoid;
 import static tukano.api.Result.ok;
-import static tukano.api.Result.ErrorCode.BAD_REQUEST;
-import static tukano.api.Result.ErrorCode.FORBIDDEN;
 import static utils.DB.getOne;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import redis.clients.jedis.params.GetExParams;
-import tukano.api.Blobs;
-import tukano.api.Result;
+import tukano.api.*;
 import tukano.api.Short;
-import tukano.api.Shorts;
-import tukano.api.UserImp;
 import tukano.impl.data.Following;
 import tukano.impl.data.Likes;
 import tukano.impl.rest.TukanoRestApplication;
@@ -205,15 +203,87 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> getFeed(String userId, String password) {
 		Log.info(() -> format("getFeed : userId = %s, pwd = %s\n", userId, password));
 
-		//TODO: This query is not correct. It should be fixed.
-		final var QUERY_FMT = """
-				SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%short:%%%%%s%%'
-				UNION
-				SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%following:%%%s%%' AND s.id LIKE '%%short:%%%%%s%%'
-				ORDER BY s.timestamp DESC
-				""";
+		// Check if user credentials are valid
+		var res = okUser(userId, password);
+		if (!res.isOK()) {
+			return error(res.error());
+		}
 
-		return errorOrValue(okUser(userId, password), DB.sql(format(QUERY_FMT, userId, userId, userId), String.class));
+		// Define queries for PostgreSQL and Cosmos DB
+		final var QUERY_POSTGRES = String.format("""
+            SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%short:%%%s%%'
+            UNION
+            SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%following:%%%s%%' AND s.id LIKE '%%short:%%%s%%'
+            ORDER BY s.timestamp DESC
+            """, userId, userId, userId);
+
+		final var QUERY_COSMOS_1 = String.format("""
+            SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE 'short:%s%%'
+            """, userId);
+
+		final var QUERY_COSMOS_2 = String.format("""
+            SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE 'following:%s%%' AND s.id LIKE 'short:%s%%'
+            """, userId, userId);
+
+		if (DB.USE_POSTGRES) {
+			return errorOrValue(okUser(userId, password), DB.sql(QUERY_POSTGRES, String.class));
+		} else {
+			Result<List<ShortInfo>> res1 = DB.sql(QUERY_COSMOS_1, ShortInfo.class);
+			List<ShortInfo> list1 = new ArrayList<>();
+			StringBuilder listShortsFound = new StringBuilder();
+			for (ShortInfo shortInfo : res1.value()) {
+				listShortsFound.append(shortInfo).append("\n");
+			}
+			Log.info(() -> format("getFeed : res1 = %s\n", listShortsFound));
+
+			if (res1.isOK() && !res1.value().isEmpty())
+				list1 = res1.value();
+
+			Result<List<ShortInfo>> re2 = DB.sql(QUERY_COSMOS_2, ShortInfo.class);
+			Log.info(() -> format("getFeed : res1 = %s\n", res1.value()));
+			List<ShortInfo> list2 = new ArrayList<>();
+			if (re2.isOK() && !re2.value().isEmpty())
+				list2 = re2.value();
+			if(!re2.isOK() || !res1.isOK())
+				return error(INTERNAL_ERROR);
+
+			// Combine and sort results by timestamp
+			List<ShortInfo> combinedResults = new ArrayList<>(list1);
+			combinedResults.addAll(list2);
+			if(combinedResults.isEmpty())
+				return ok(new ArrayList<>());
+
+			combinedResults.sort((s1, s2) -> {
+
+				long timestamp1 = s1.getTimestamp();
+				long timestamp2 = s2.getTimestamp();
+				return Long.compare(timestamp2, timestamp1); // Sort in descending order
+			});
+
+			// Convert each ShortInfo object to JSON string
+			List<String> jsonResults = new ArrayList<>();
+			ObjectMapper mapper = new ObjectMapper();
+
+			for (ShortInfo shortInfo : combinedResults) {
+				try {
+					// Serialize ShortInfo object to JSON string
+					String json = mapper.writeValueAsString(shortInfo);
+					jsonResults.add(json);
+				} catch (Exception e) {
+					// Handle serialization error
+					e.printStackTrace();
+					return error(Result.ErrorCode.INTERNAL_ERROR);
+				}
+			}
+
+			return Result.ok(jsonResults);
+		}
+	}
+
+	// Helper function to extract timestamp (assumes timestamp is part of the result string)
+	private long extractTimestamp(String result) {
+		String[] parts = result.split(",");
+		 return Long.parseLong(parts[1].trim());
 	}
 
 	protected Result<UserImp> okUser(String userId, String pwd) {
