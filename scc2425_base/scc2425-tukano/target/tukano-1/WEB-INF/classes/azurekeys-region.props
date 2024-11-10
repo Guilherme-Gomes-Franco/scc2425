@@ -1,0 +1,17 @@
+# Date : 11/04/24, 10:16 AM
+BLOB_STORE_CONNECTION=DefaultEndpointsProtocol=https;AccountName=scc2323;AccountKey=8gfHhcOfIAtd+mZkMcYCNwW1rLYHvKvimgfplN/0PWl4ceca+qjkBUWpwJoX4bln8eRk/Nq2431j+ASt9TXmRw==;EndpointSuffix=core.windows.net
+BLOB_CONTAINER_NAME=blobs
+
+COSMOSDB_KEY=sub43ypMfUivUL3kQMoCrPtak8YCqErh0g60Gp7zLR4x3ZHm4QLyJUYt4KdC5cExPEfv3U7GYeWtACDbbaWOfQ==
+COSMOSDB_URL=https://scc2324.documents.azure.com:443/
+COSMOSDB_DATABASE=scc2324
+COSMOSDB_CONTAINER=users
+
+REDIS_HOSTNAME=scc2425-redis.redis.cache.windows.net
+REDIS_PORT=6380
+REDIS_KEY=0GZPiNm5kI2WmnCBb7I4NLGLYDfFgYzlVAzCaN4BwXE=
+REDIS_TTL=1000
+REDIS_SSL=true
+
+FUNCTION_NAME=app-geo-replicate
+UPDATE_VIEWS_FUNCTION_CODE=-PsI47lrYFCCO39XSUh_s1qBCZayPt9ZkUBzg3b3BX2GAzFuu-a04A==
