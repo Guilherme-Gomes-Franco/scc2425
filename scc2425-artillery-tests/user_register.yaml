@@ -1,8 +1,8 @@
 config:
-    target: http://127.0.0.1:8080/tukano/rest
+    target: "{{ $env.TARGET_URL }}"
     phases:
         - name: simple_post
-          duration: 100
+          duration: 20
           arrivalCount: 200
     plugins:                                                                      
         metrics-by-endpoint: {}

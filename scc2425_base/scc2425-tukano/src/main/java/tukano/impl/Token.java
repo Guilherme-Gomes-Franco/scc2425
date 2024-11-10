@@ -9,7 +9,7 @@ public class Token {
 
 	private static final String DELIMITER = "-";
 	private static final long MAX_TOKEN_AGE = 300000;
-	private static String secret;
+	private static String secret = "secret";
 
 	public static void setSecret(String s) {
 		secret = s;
@@ -24,6 +24,7 @@ public class Token {
 	public static String get(String id) {
 		var timestamp = System.currentTimeMillis();
 		var signature = Hash.of(id, timestamp, secret);
+		Log.info(String.format("Signed with id %s, timestamp %s secret %s\n", id, timestamp, secret));
 		return String.format("%s%s%s", timestamp, DELIMITER, signature);
 	}
 
@@ -32,6 +33,7 @@ public class Token {
 			var bits = tokenStr.split(DELIMITER);
 			var timestamp = Long.valueOf(bits[0]);
 			var hmac = Hash.of(id, timestamp, secret);
+			Log.info(String.format("hmac with id %s, timestamp %s secret %s\n", id, timestamp, secret));
 			var elapsed = Math.abs(System.currentTimeMillis() - timestamp);			
 			Log.info(String.format("hash ok:%s, elapsed %s ok: %s\n", hmac.equals(bits[1]), elapsed, elapsed < MAX_TOKEN_AGE));
 			return hmac.equals(bits[1]) && elapsed < MAX_TOKEN_AGE;			
