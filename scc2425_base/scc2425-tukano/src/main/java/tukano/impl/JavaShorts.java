@@ -49,7 +49,11 @@ public class JavaShorts implements Shorts {
 			var blobUrl = format("%s/%s/%s", TukanoRestServer.serverURI, Blobs.NAME, shortId); 
 			var shrt = new Short(shortId, userId, blobUrl);
 
-			return errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
+			shrt = shrt.copyWithLikes_And_Token(0);
+
+			return DB.insertOne(shrt);
+
+//			return errorOrValue(DB.insertOne(shrt), s -> s.copyWithLikes_And_Token(0));
 		});
 	}
 

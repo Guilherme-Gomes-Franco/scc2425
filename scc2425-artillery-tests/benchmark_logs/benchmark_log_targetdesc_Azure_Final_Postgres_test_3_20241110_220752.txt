@@ -1,0 +1,416 @@
+Running user_register.yaml on https://tukano-scc-final-postgres.azurewebsites.net/rest
+Test run id: t3rnx_h8b5gjpzd8ppwtk398bk5qcfwehce_nkfk
+Phase started: simple_post (index: 0, duration: 20s) 22:07:57(+0000)
+
+--------------------------------------
+Metrics for period to: 22:08:00(+0000) (width: 2.5s)
+--------------------------------------
+
+http.request_rate: ............................................................. 11/sec
+http.requests: ................................................................. 26
+vusers.created: ................................................................ 26
+vusers.created_by_name.TuKanoWholeUserFlow: .................................... 26
+
+
+--------------------------------------
+Metrics for period to: 22:08:10(+0000) (width: 9.905s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 26
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 100
+plugins.metrics-by-endpoint./rest/users/.errors.ETIMEDOUT: ..................... 26
+vusers.created: ................................................................ 100
+vusers.created_by_name.TuKanoWholeUserFlow: .................................... 100
+vusers.failed: ................................................................. 26
+
+
+Phase completed: simple_post (index: 0, duration: 20s) 22:08:17(+0000)
+
+--------------------------------------
+Metrics for period to: 22:08:20(+0000) (width: 9.911s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 100
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 74
+plugins.metrics-by-endpoint./rest/users/.errors.ETIMEDOUT: ..................... 100
+vusers.created: ................................................................ 74
+vusers.created_by_name.TuKanoWholeUserFlow: .................................... 74
+vusers.failed: ................................................................. 100
+
+
+--------------------------------------
+Metrics for period to: 22:08:30(+0000) (width: 7.309s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 74
+plugins.metrics-by-endpoint./rest/users/.errors.ETIMEDOUT: ..................... 74
+vusers.failed: ................................................................. 74
+
+
+All VUs finished. Total time: 31 seconds
+
+--------------------------------
+Summary report @ 22:08:28(+0000)
+--------------------------------
+
+errors.ETIMEDOUT: .............................................................. 200
+http.request_rate: ............................................................. 8/sec
+http.requests: ................................................................. 200
+plugins.metrics-by-endpoint./rest/users/.errors.ETIMEDOUT: ..................... 200
+vusers.created: ................................................................ 200
+vusers.created_by_name.TuKanoWholeUserFlow: .................................... 200
+vusers.failed: ................................................................. 200
+
+==================================================
+
+Running upload_shorts.yaml on https://tukano-scc-final-postgres.azurewebsites.net/rest
+Test run id: t784p_9jnwjkgtbe95fdx45b73fzp6yyacg_pqdb
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Phase started: Warm up (index: 0, duration: 10s) 22:08:33(+0000)
+
+Phase completed: Warm up (index: 0, duration: 10s) 22:08:43(+0000)
+
+Phase started: Main test (index: 1, duration: 30s) 22:08:43(+0000)
+
+--------------------------------------
+Metrics for period to: 22:08:40(+0000) (width: 5.142s)
+--------------------------------------
+
+http.request_rate: ............................................................. 3/sec
+http.requests: ................................................................. 11
+vusers.created: ................................................................ 12
+vusers.created_by_name.Upload short: ........................................... 12
+
+
+--------------------------------------
+Metrics for period to: 22:08:50(+0000) (width: 9.971s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 11
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 74
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  11
+vusers.created: ................................................................ 73
+vusers.created_by_name.Upload short: ........................................... 73
+vusers.failed: ................................................................. 11
+
+
+--------------------------------------
+Metrics for period to: 22:09:00(+0000) (width: 9.969s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 74
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 100
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  74
+vusers.created: ................................................................ 100
+vusers.created_by_name.Upload short: ........................................... 100
+vusers.failed: ................................................................. 74
+
+
+--------------------------------------
+Metrics for period to: 22:09:10(+0000) (width: 9.956s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 100
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 100
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  100
+vusers.created: ................................................................ 100
+vusers.created_by_name.Upload short: ........................................... 100
+vusers.failed: ................................................................. 100
+
+
+Phase completed: Main test (index: 1, duration: 30s) 22:09:13(+0000)
+
+--------------------------------------
+Metrics for period to: 22:09:20(+0000) (width: 9.968s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 100
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 45
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  100
+vusers.created: ................................................................ 45
+vusers.created_by_name.Upload short: ........................................... 45
+vusers.failed: ................................................................. 100
+
+
+--------------------------------------
+Metrics for period to: 22:09:30(+0000) (width: 4.256s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 45
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  45
+vusers.failed: ................................................................. 45
+
+
+All VUs finished. Total time: 51 seconds
+
+--------------------------------
+Summary report @ 22:09:25(+0000)
+--------------------------------
+
+errors.ETIMEDOUT: .............................................................. 330
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 330
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  330
+vusers.created: ................................................................ 330
+vusers.created_by_name.Upload short: ........................................... 330
+vusers.failed: ................................................................. 330
+
+==================================================
+
+Running realistic_flow.yaml on https://tukano-scc-final-postgres.azurewebsites.net/rest
+Test run id: tgfpg_yk6g9f98y5mkmwzpa876ffzfkfwh6_7bbq
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Parsed 201 rows
+Phase started: Warm up (index: 0, duration: 10s) 22:09:31(+0000)
+
+Phase completed: Warm up (index: 0, duration: 10s) 22:09:41(+0000)
+
+Phase started: Main test (index: 1, duration: 30s) 22:09:41(+0000)
+
+--------------------------------------
+Metrics for period to: 22:09:40(+0000) (width: 7.247s)
+--------------------------------------
+
+http.request_rate: ............................................................. 5/sec
+http.requests: ................................................................. 20
+vusers.created: ................................................................ 20
+vusers.created_by_name.Download short: ......................................... 4
+vusers.created_by_name.Follow user: ............................................ 4
+vusers.created_by_name.Get User's Shorts: ...................................... 3
+vusers.created_by_name.Like short: ............................................. 4
+vusers.created_by_name.View feed: .............................................. 5
+
+
+--------------------------------------
+Metrics for period to: 22:09:50(+0000) (width: 9.188s)
+--------------------------------------
+
+errors.Cannot read properties of undefined (reading 'ownerId'): ................ 2
+errors.ETIMEDOUT: .............................................................. 20
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 85
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}.errors.ETIMEDOUT: ....... 4
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/{{ userId }}/likes?pw...  4
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/feed?pwd={{ pwd }}.err...  5
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/shorts.errors.ETIMEDOUT: . 3
+plugins.metrics-by-endpoint./rest/shorts/{{ userId1 }}/{{ userId2 }}/followe...  4
+vusers.created: ................................................................ 87
+vusers.created_by_name.Download short: ......................................... 14
+vusers.created_by_name.Follow user: ............................................ 9
+vusers.created_by_name.Get Short Likes: ........................................ 3
+vusers.created_by_name.Get User Follows: ....................................... 5
+vusers.created_by_name.Get User's Shorts: ...................................... 10
+vusers.created_by_name.Like short: ............................................. 9
+vusers.created_by_name.Upload short: ........................................... 1
+vusers.created_by_name.View feed: .............................................. 36
+vusers.failed: ................................................................. 22
+
+
+--------------------------------------
+Metrics for period to: 22:10:00(+0000) (width: 9.926s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 85
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 100
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}.errors.ETIMEDOUT: ....... 12
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/likes?pwd={{ pwd }}.e...  3
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/{{ userId }}/likes?pw...  9
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/feed?pwd={{ pwd }}.err...  36
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/followers?pwd={{ pwd }...  5
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/shorts.errors.ETIMEDOUT: . 10
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  1
+plugins.metrics-by-endpoint./rest/shorts/{{ userId1 }}/{{ userId2 }}/followe...  9
+vusers.created: ................................................................ 100
+vusers.created_by_name.Download short: ......................................... 23
+vusers.created_by_name.Follow user: ............................................ 11
+vusers.created_by_name.Get Short Likes: ........................................ 4
+vusers.created_by_name.Get User Follows: ....................................... 5
+vusers.created_by_name.Get User's Shorts: ...................................... 9
+vusers.created_by_name.Like short: ............................................. 11
+vusers.created_by_name.Upload short: ........................................... 3
+vusers.created_by_name.View feed: .............................................. 34
+vusers.failed: ................................................................. 85
+
+
+Phase completed: Main test (index: 1, duration: 30s) 22:10:11(+0000)
+
+--------------------------------------
+Metrics for period to: 22:10:10(+0000) (width: 9.926s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 100
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 100
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}.errors.ETIMEDOUT: ....... 23
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/likes?pwd={{ pwd }}.e...  4
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/{{ userId }}/likes?pw...  11
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/feed?pwd={{ pwd }}.err...  34
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/followers?pwd={{ pwd }...  5
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/shorts.errors.ETIMEDOUT: . 9
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  3
+plugins.metrics-by-endpoint./rest/shorts/{{ userId1 }}/{{ userId2 }}/followe...  11
+vusers.created: ................................................................ 100
+vusers.created_by_name.Download short: ......................................... 18
+vusers.created_by_name.Follow user: ............................................ 13
+vusers.created_by_name.Get Short Likes: ........................................ 1
+vusers.created_by_name.Get User Follows: ....................................... 4
+vusers.created_by_name.Get User's Shorts: ...................................... 10
+vusers.created_by_name.Like short: ............................................. 6
+vusers.created_by_name.Register user: .......................................... 2
+vusers.created_by_name.Upload short: ........................................... 3
+vusers.created_by_name.View feed: .............................................. 43
+vusers.failed: ................................................................. 100
+
+
+--------------------------------------
+Metrics for period to: 22:10:20(+0000) (width: 9.935s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 100
+http.request_rate: ............................................................. 16/sec
+http.requests: ................................................................. 23
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}.errors.ETIMEDOUT: ....... 18
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/likes?pwd={{ pwd }}.e...  1
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/{{ userId }}/likes?pw...  6
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/feed?pwd={{ pwd }}.err...  43
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/followers?pwd={{ pwd }...  4
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/shorts.errors.ETIMEDOUT: . 10
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  3
+plugins.metrics-by-endpoint./rest/shorts/{{ userId1 }}/{{ userId2 }}/followe...  13
+plugins.metrics-by-endpoint./rest/users/.errors.ETIMEDOUT: ..................... 2
+vusers.created: ................................................................ 23
+vusers.created_by_name.Download short: ......................................... 12
+vusers.created_by_name.Get Short Likes: ........................................ 1
+vusers.created_by_name.Get User's Shorts: ...................................... 1
+vusers.created_by_name.Like short: ............................................. 1
+vusers.created_by_name.View feed: .............................................. 8
+vusers.failed: ................................................................. 100
+
+
+--------------------------------------
+Metrics for period to: 22:10:30(+0000) (width: 2.13s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 23
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}.errors.ETIMEDOUT: ....... 12
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/likes?pwd={{ pwd }}.e...  1
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/{{ userId }}/likes?pw...  1
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/feed?pwd={{ pwd }}.err...  8
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/shorts.errors.ETIMEDOUT: . 1
+vusers.failed: ................................................................. 23
+
+
+All VUs finished. Total time: 50 seconds
+
+--------------------------------
+Summary report @ 22:10:23(+0000)
+--------------------------------
+
+errors.Cannot read properties of undefined (reading 'ownerId'): ................ 2
+errors.ETIMEDOUT: .............................................................. 328
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 328
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}.errors.ETIMEDOUT: ....... 69
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/likes?pwd={{ pwd }}.e...  9
+plugins.metrics-by-endpoint./rest/shorts/{{ shortId }}/{{ userId }}/likes?pw...  31
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/feed?pwd={{ pwd }}.err...  126
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/followers?pwd={{ pwd }...  14
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}/shorts.errors.ETIMEDOUT: . 33
+plugins.metrics-by-endpoint./rest/shorts/{{ userId }}?pwd={{ pwd }}.errors.E...  7
+plugins.metrics-by-endpoint./rest/shorts/{{ userId1 }}/{{ userId2 }}/followe...  37
+plugins.metrics-by-endpoint./rest/users/.errors.ETIMEDOUT: ..................... 2
+vusers.created: ................................................................ 330
+vusers.created_by_name.Download short: ......................................... 71
+vusers.created_by_name.Follow user: ............................................ 37
+vusers.created_by_name.Get Short Likes: ........................................ 9
+vusers.created_by_name.Get User Follows: ....................................... 14
+vusers.created_by_name.Get User's Shorts: ...................................... 33
+vusers.created_by_name.Like short: ............................................. 31
+vusers.created_by_name.Register user: .......................................... 2
+vusers.created_by_name.Upload short: ........................................... 7
+vusers.created_by_name.View feed: .............................................. 126
+vusers.failed: ................................................................. 330
+
+==================================================
+
+Running user_delete.yaml on https://tukano-scc-final-postgres.azurewebsites.net/rest
+Test run id: tbc3n_m76jwfwm6mph7dgm3cr38ykpx85xa_mtew
+Phase started: simple_post (index: 0, duration: 20s) 22:10:29(+0000)
+
+--------------------------------------
+Metrics for period to: 22:10:30(+0000) (width: 0.334s)
+--------------------------------------
+
+http.request_rate: ............................................................. 4/sec
+http.requests: ................................................................. 4
+vusers.created: ................................................................ 4
+vusers.created_by_name.TuKanoDeleteUserFlow: ................................... 4
+
+
+--------------------------------------
+Metrics for period to: 22:10:40(+0000) (width: 9.915s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 4
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 100
+vusers.created: ................................................................ 100
+vusers.created_by_name.TuKanoDeleteUserFlow: ................................... 100
+vusers.failed: ................................................................. 4
+
+
+Phase completed: simple_post (index: 0, duration: 20s) 22:10:49(+0000)
+
+--------------------------------------
+Metrics for period to: 22:10:50(+0000) (width: 9.914s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 100
+http.request_rate: ............................................................. 10/sec
+http.requests: ................................................................. 96
+vusers.created: ................................................................ 96
+vusers.created_by_name.TuKanoDeleteUserFlow: ................................... 96
+vusers.failed: ................................................................. 100
+
+
+--------------------------------------
+Metrics for period to: 22:11:00(+0000) (width: 9.51s)
+--------------------------------------
+
+errors.ETIMEDOUT: .............................................................. 96
+vusers.failed: ................................................................. 96
+
+
+All VUs finished. Total time: 30 seconds
+
+--------------------------------
+Summary report @ 22:11:00(+0000)
+--------------------------------
+
+errors.ETIMEDOUT: .............................................................. 200
+http.request_rate: ............................................................. 6/sec
+http.requests: ................................................................. 200
+vusers.created: ................................................................ 200
+vusers.created_by_name.TuKanoDeleteUserFlow: ................................... 200
+vusers.failed: ................................................................. 200
+
+==================================================
+

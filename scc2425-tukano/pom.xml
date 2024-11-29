@@ -70,7 +70,7 @@
 			    <configuration>
 			        <schemaVersion>v2</schemaVersion>
 			        <resourceGroup>tukano-scc-61052</resourceGroup>
-			        <appName>tukano-scc-61052</appName>
+			        <appName>tukano-scc-final-cosmos</appName>
 			        <pricingTier>F1</pricingTier>
 			        <region>westeurope</region>
 			        <runtime>
