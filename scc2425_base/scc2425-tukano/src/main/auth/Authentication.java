@@ -17,6 +17,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import scc.srv.auth.RequestCookies;
+import tukano.api.Result;
+import tukano.impl.JavaUsers;
 
 @Path(Authentication.PATH)
 public class Authentication {
@@ -24,15 +26,21 @@ public class Authentication {
 	static final String USER = "username";
 	static final String PWD = "password";
 	static final String COOKIE_KEY = "scc:session";
-	static final String LOGIN_PAGE = "login.html";
 	private static final int MAX_COOKIE_AGE = 3600;
 	static final String REDIRECT_TO_AFTER_LOGIN = "http://127.0.0.1:8080/tukano/rest";
 
 	@POST
-	public Response login(@FormParam(USER) String user, @FormParam(PWD) String password) {
+	@Path("/login")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response login(UserCredentials credentials) {
+		String user = credentials.getUser();
+		String password = credentials.getPassword();
 		System.out.println("user: " + user + " pwd:" + password);
-		boolean pwdOk = true; // replace with code to check user password
-		if (pwdOk) {
+
+		Result<T> res = JavaUsers.getInstance().getUser(user, password);
+
+		if (res.isOK()) {
 			String uid = UUID.randomUUID().toString();
 			var cookie = new NewCookie.Builder(COOKIE_KEY)
 					.value(uid).path("/")
@@ -42,24 +50,14 @@ public class Authentication {
 					.httpOnly(true)
 					.build();
 
-			FakeRedisLayer.getInstance().putSession(new Session(uid, user));
+			// mudar para actual Redis FakeRedisLayer.getInstance().putSession(new
+			// Session(uid, user));
 
-			return Response.seeOther(URI.create(REDIRECT_TO_AFTER_LOGIN))
+			return Response.seeOther(REDIRECT_TO_AFTER_LOGIN)
 					.cookie(cookie)
 					.build();
 		} else
 			throw new NotAuthorizedException("Incorrect login");
-	}
-
-	@GET
-	@Produces(MediaType.TEXT_HTML)
-	public String login() {
-		try {
-			var in = getClass().getClassLoader().getResourceAsStream(LOGIN_PAGE);
-			return new String(in.readAllBytes());
-		} catch (Exception x) {
-			throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-		}
 	}
 
 	static public Session validateSession(String userId) throws NotAuthorizedException {
