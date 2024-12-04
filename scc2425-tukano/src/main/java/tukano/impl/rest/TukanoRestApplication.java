@@ -4,6 +4,9 @@ import jakarta.ws.rs.core.Application;
 
 import java.util.Set;
 import java.util.HashSet;
+
+import tukano.impl.rest.auth.RequestCookiesCleanupFilter;
+import tukano.impl.rest.auth.RequestCookiesFilter;
 import utils.IP;
 import utils.Props;
 
@@ -24,6 +27,10 @@ public class TukanoRestApplication extends Application {
 		resources.add(RestBlobsResource.class);
 		resources.add(RestShortsResource.class);
 		resources.add(RestUsersResource.class);
+		resources.add(ControlResource.class);
+		resources.add(RequestCookiesFilter.class);
+		resources.add(RequestCookiesCleanupFilter.class);
+		resources.add(Authentication.class);
 		resources.add(TestResource.class);
 		singletons.add(new RestBlobsResource());
 		singletons.add(new RestShortsResource());
