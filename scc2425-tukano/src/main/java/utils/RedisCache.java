@@ -4,7 +4,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 public class RedisCache {
-    private static final boolean Redis_USE_TLS = true;
 
     private static JedisPool instance;
 
@@ -21,6 +20,9 @@ public class RedisCache {
         poolConfig.setTestWhileIdle(true);
         poolConfig.setNumTestsPerEvictionRun(3);
         poolConfig.setBlockWhenExhausted(true);
+        // instance = new JedisPool("", 6379); Quando descobrir o que meter como host we
+        // gucci
+
         instance = new JedisPool(poolConfig,
                 Props.get("REDIS_HOSTNAME"),
                 Props.get("REDIS_PORT", Integer.class),

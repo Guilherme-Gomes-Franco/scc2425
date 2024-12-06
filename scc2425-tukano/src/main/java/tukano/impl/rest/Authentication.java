@@ -26,7 +26,6 @@ public class Authentication {
 	static final String USER = "username";
 	static final String PWD = "password";
 	public static final String COOKIE_KEY = "scc:session";
-	static final String LOGIN_PAGE = "login.html";
 	private static final int MAX_COOKIE_AGE = 3600;
 
 	@POST
@@ -50,17 +49,6 @@ public class Authentication {
 					.build();
 		} else
 			throw new NotAuthorizedException("Incorrect login");
-	}
-
-	@GET
-	@Produces(MediaType.TEXT_HTML)
-	public String login() {
-		try {
-			var in = getClass().getClassLoader().getResourceAsStream(LOGIN_PAGE);
-			return new String(in.readAllBytes());
-		} catch (Exception x) {
-			throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-		}
 	}
 
 	static public Session validateSession(String userId) throws NotAuthorizedException {
