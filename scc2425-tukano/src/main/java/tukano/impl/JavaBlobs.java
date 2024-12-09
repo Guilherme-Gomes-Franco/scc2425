@@ -38,8 +38,8 @@ public class JavaBlobs implements Blobs {
 
 	private JavaBlobs() {
 		String storageRootPath = System.getenv("STORAGE_ROOT"); // Docker volume path from environment variable
+		//storage = new DockerFilesystemStorage(storageRootPath);
 		storage = new DockerFilesystemStorage(storageRootPath);
-		// storage = new AzureBlobStorage();
 		baseURI = String.format("%s/%s/", TukanoRestApplication.serverURI, Blobs.NAME);
 	}
 

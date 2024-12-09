@@ -18,13 +18,18 @@ import java.util.function.Consumer;
 import tukano.api.Result;
 import utils.Hash;
 import utils.IO;
+import utils.Props;
 
 public class DockerFilesystemStorage implements BlobStorage {
     private final String rootDir;
     private static final int CHUNK_SIZE = 4096;
 
     public DockerFilesystemStorage(String rootDir) {
-        this.rootDir = rootDir != null ? rootDir : "/tmp/";
+        this.rootDir = rootDir != null ? rootDir : Props.get("BLOB_PATH");
+    }
+
+    public DockerFilesystemStorage() {
+        this.rootDir = Props.get("BLOB_PATH");
     }
 
     @Override
