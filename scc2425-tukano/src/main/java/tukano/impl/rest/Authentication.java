@@ -6,6 +6,7 @@ import java.util.UUID;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotAuthorizedException;
@@ -29,7 +30,13 @@ public class Authentication {
 	private static final int MAX_COOKIE_AGE = 3600;
 
 	@POST
-	public Response login(@FormParam(USER) String user, @FormParam(PWD) String password) {
+	@Path("/login")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response login(UserCredentials credentials) {
+		var user = credentials.getUser();
+		var password = credentials.getPassword();
+
 		System.out.println("user: " + user + " pwd:" + password);
 		var res = JavaUsers.getInstance().getUser(user, password);
 		if (res.isOK()) {

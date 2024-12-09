@@ -20,14 +20,10 @@ public class RedisCache {
         poolConfig.setTestWhileIdle(true);
         poolConfig.setNumTestsPerEvictionRun(3);
         poolConfig.setBlockWhenExhausted(true);
-        // instance = new JedisPool("", 6379); Quando descobrir o que meter como host we
-        // gucci
-
         instance = new JedisPool(poolConfig,
                 Props.get("REDIS_HOSTNAME"),
                 Props.get("REDIS_PORT", Integer.class),
                 Props.get("REDIS_TTL", Integer.class),
-                Props.get("REDIS_KEY"),
                 Props.get("REDIS_SSL", Boolean.class));
         return instance;
     }
