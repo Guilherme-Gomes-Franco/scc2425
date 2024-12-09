@@ -48,9 +48,19 @@ public class Authentication {
 					.httpOnly(true)
 					.build();
 
+			Session sess = new Session(uid, user);
+			System.out.println(sess);
+			System.out.println("got here 1");
+
 			RedisCacheWrapper.getInstance().putSession(new Session(uid, user));
 
-			return Response.seeOther(URI.create(TukanoRestApplication.serverURI))
+			System.out.println("got here 2");
+
+			/*return Response.seeOther(URI.create(TukanoRestApplication.serverURI))
+					.cookie(cookie)
+					.build();*/
+
+			return Response.ok()
 					.cookie(cookie)
 					.build();
 		} else

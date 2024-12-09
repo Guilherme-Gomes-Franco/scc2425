@@ -8,3 +8,4 @@ kubectl apply -f blob-pvc.yaml
 kubectl apply -f blob.yaml
 kubectl apply -f webapp.yaml
 kubectl port-forward svc/scc2425-webapp-service 8080:80
+kubectl rollout restart deployment/scc2425-webapp
