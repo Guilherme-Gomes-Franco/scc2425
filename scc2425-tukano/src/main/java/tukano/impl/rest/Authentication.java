@@ -30,9 +30,8 @@ public class Authentication {
 	private static final int MAX_COOKIE_AGE = 3600;
 
 	@POST
-	@Path("/login")
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(UserCredentials credentials) {
 		var user = credentials.getUser();
 		var password = credentials.getPassword();
