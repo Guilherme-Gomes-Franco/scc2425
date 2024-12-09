@@ -11,7 +11,7 @@ public class RedisCache {
         if (instance != null)
             return instance;
 
-        var poolConfig = new JedisPoolConfig();
+        /*var poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(128);
         poolConfig.setMaxIdle(128);
         poolConfig.setMinIdle(16);
@@ -24,7 +24,17 @@ public class RedisCache {
                 Props.get("REDIS_HOSTNAME"),
                 Props.get("REDIS_PORT", Integer.class),
                 Props.get("REDIS_TTL", Integer.class),
-                Props.get("REDIS_SSL", Boolean.class));
+                Props.get("REDIS_SSL", Boolean.class));*/
+
+        int port = 6379;
+        try{
+            port = Props.get("REDIS_PORT", Integer.class);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        instance = new JedisPool(Props.get("REDIS_HOSTNAME"), port);
         return instance;
     }
 }
