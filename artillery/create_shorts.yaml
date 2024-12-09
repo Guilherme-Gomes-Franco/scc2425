@@ -1,0 +1,32 @@
+config:
+    target: http://127.0.0.1:8080/tukano/rest
+    phases:
+        - name: create_shorts
+          duration: 1
+          arrivalRate: 1
+    payload:
+        path: ./data/users.csv
+        order: sequence
+        skipHeader: true
+        delimiter: ","
+        skipEmptyLines: true
+        fields:
+            - "userid"
+            - "pwd"
+            - "email"
+            - "displayName"
+    processor: ./test-utils.js  # Reference to the processor file
+scenarios:
+    - name: CreateShorts
+      flow:
+        - post:
+            url: "/shorts/{{userid}}?pwd={{pwd}}"
+            headers:
+                Content-Type: application/json
+            json:
+                content: "This is a test short by user {{userid}}"
+            afterResponse: "saveShortId"  # Calls saveShortId function after POST
+        - delete:
+            url: "/shorts/{{shortId}}?pwd={{pwd}}"  # Use the saved shortId here
+            headers:
+                Content-Type: application/json
