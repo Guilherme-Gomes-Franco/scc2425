@@ -21,15 +21,26 @@ spec:
         - containerPort: 5432
         env:
         - name: POSTGRES_USER
-          value: "citus"
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_USER
         - name: POSTGRES_PASSWORD
-          value: "Admin1234"
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_PASSWORD
         - name: POSTGRES_DB
           value: "postgres-scc-2425"
         volumeMounts:
+        - mountPath: /docker-entrypoint-initdb.d
+          name: db-init-scripts
         - mountPath: /var/lib/postgresql/data
           name: postgres-data
       volumes:
+      - name: db-init-scripts
+        configMap:
+          name: db-init-scripts
       - name: postgres-data
         persistentVolumeClaim:
           claimName: postgres-pvc
