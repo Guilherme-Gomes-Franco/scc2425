@@ -44,7 +44,9 @@ def run_shell_commands(script_path):
     Executes the shell script to set up the environment.
     """
     try:
-        result = subprocess.run(["bash", script_path], capture_output=True, text=True)
+        result = subprocess.run(
+            ["wsl", "bash", script_path], capture_output=True, text=True
+        )
         if result.returncode == 0:
             print("Shell commands executed successfully.")
         else:
@@ -80,11 +82,11 @@ def run_artillery(target, yaml_file, log_file):
 
 
 def main():
-    script_path = "commands.sh"
+    # script_path = "..\kubernets_yaml\commands.sh"
 
     # Run the shell commands
-    print("Running shell commands to set up the environment...")
-    run_shell_commands(script_path)
+    # print("Running shell commands to set up the environment...")
+    # run_shell_commands(script_path)
 
     target_count = 0
     for target in targets:

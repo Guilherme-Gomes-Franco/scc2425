@@ -21,17 +21,22 @@ spec:
         - containerPort: 5432
         env:
         - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: db-user-secret
-              key: DB_USER
+          value: "citus"
         - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db-user-secret
-              key: DB_PASSWORD
+          value: "Admin1234"
         - name: POSTGRES_DB
           value: "postgres-scc-2425"
+        - name: POSTGRES_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_ADMIN_USER
+        - name: POSTGRES_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_ADMIN_PASSWORD
+        
         volumeMounts:
         - mountPath: /docker-entrypoint-initdb.d
           name: db-init-scripts
