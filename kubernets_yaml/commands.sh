@@ -11,8 +11,8 @@ kubectl create secret generic db-user-secret \
   --from-literal=POSTGRES_USER=citus \
   --from-literal=POSTGRES_PASSWORD=Admin1234
 
-chmod +x init_user.sh
-kubectl create configmap db-init-scripts --from-file=init_user.sh
+#chmod +x init_user.sh
+#kubectl create configmap db-init-scripts --from-file=init_user.sh
 
 kubectl apply -f postgres-pvc.yaml
 kubectl apply -f postgres.yaml
@@ -31,5 +31,5 @@ kubectl apply -f webapp.yaml
 
 kubectl wait --for=condition=ready pod -l app=scc2425-webapp
 
-#kubectl port-forward svc/scc2425-webapp-service 8080:80
+kubectl port-forward svc/scc2425-webapp-service 8080:80
 #kubectl rollout restart deployment/scc2425-webapp

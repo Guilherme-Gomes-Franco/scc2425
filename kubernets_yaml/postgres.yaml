@@ -43,8 +43,8 @@ spec:
         - name: POSTGRES_DB
           value: "postgres-scc-2425"
         volumeMounts:
-        - mountPath: /docker-entrypoint-initdb.d
-          name: db-init-scripts
+        #- mountPath: /docker-entrypoint-initdb.d
+        #  name: db-init-scripts
         - mountPath: /var/lib/postgresql/data
           name: postgres-data
       volumes:
