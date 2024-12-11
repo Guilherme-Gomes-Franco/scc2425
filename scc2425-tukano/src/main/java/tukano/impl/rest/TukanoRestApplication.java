@@ -5,6 +5,8 @@ import jakarta.ws.rs.core.Application;
 import java.util.Set;
 import java.util.HashSet;
 
+import tukano.api.UserImp;
+import tukano.impl.JavaUsers;
 import tukano.impl.rest.auth.RequestCookiesCleanupFilter;
 import tukano.impl.rest.auth.RequestCookiesFilter;
 import utils.IP;
@@ -35,6 +37,13 @@ public class TukanoRestApplication extends Application {
 		singletons.add(new RestBlobsResource());
 		singletons.add(new RestShortsResource());
 		singletons.add(new RestUsersResource());
+
+		JavaUsers.getInstance().createUser(
+				new UserImp(System.getenv("DB_USER"),              // Username from environment variable
+						System.getenv("DB_PASSWORD"),          // Password from environment variable
+						"admin@admin.com",
+						"Administrator")
+		);
 	}
 
 	@Override
