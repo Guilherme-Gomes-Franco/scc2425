@@ -14,17 +14,6 @@ spec:
       labels:
         app: scc2425-webapp
     spec:
-      env:
-      - name: DB_USER
-        valueFrom:
-          secretKeyRef:
-            name: db-user-secret
-            key: DB_USER
-      - name: DB_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: db-user-secret
-            key: DB_PASSWORD
       containers:
       - name: scc2425-webapp
         image: jmlcoliveira/scc2425-webapp:latest
@@ -33,6 +22,17 @@ spec:
         volumeMounts:
         - name: media-volume
           mountPath: /mnt/media
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_PASSWORD
       volumes:
       - name: media-volume
         persistentVolumeClaim:
