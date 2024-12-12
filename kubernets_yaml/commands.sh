@@ -1,4 +1,6 @@
-kubectl create secret generic db-user-secret --from-literal=DB_ADMIN_USER=admin --from-literal=DB_ADMIN_PASSWORD=secretpassword
+kubectl create secret generic db-user-secret \
+  --from-literal=DB_USER=admin \
+  --from-literal=DB_PASSWORD=secretpassword
 kubectl create configmap db-init-scripts --from-file=init_user.sh
 kubectl apply -f postgres-pvc.yaml
 kubectl apply -f postgres.yaml

@@ -28,7 +28,7 @@ public class RedisCache {
 
         int port = 6379;
         try{
-            port = Props.get("REDIS_PORT", Integer.class);
+            port = Integer.parseInt(Props.get("REDIS_PORT"));
         }
         catch (Exception e) {
             e.printStackTrace();

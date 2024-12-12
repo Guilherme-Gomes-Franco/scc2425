@@ -14,7 +14,7 @@ public class RedisCacheWrapper {
 
 	public void putSession(Session s) {
 		try (var jedis = RedisCache.getCachePool().getResource()) {
-			jedis.setex(s.uid(), 120, JSON.encode(s));
+			jedis.setex(s.uid(), 3600, JSON.encode(s));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

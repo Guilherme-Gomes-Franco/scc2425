@@ -22,6 +22,23 @@ spec:
         volumeMounts:
         - name: media-volume
           mountPath: /mnt/media
+        env:
+        - name: BLOB_PATH
+          value: /data/media
+        - name: REDIS_HOSTNAME
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: DB_PASSWORD
       volumes:
       - name: media-volume
         persistentVolumeClaim:
