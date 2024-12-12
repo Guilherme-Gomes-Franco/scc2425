@@ -1,0 +1,28 @@
+Running user_register.yaml on https://http://127.0.0.1:8080/tukano-1
+Error: 'artillery' is not recognized as an internal or external command,
+operable program or batch file.
+
+
+==================================================
+
+Running upload_shorts.yaml on https://http://127.0.0.1:8080/tukano-1
+Error: 'artillery' is not recognized as an internal or external command,
+operable program or batch file.
+
+
+==================================================
+
+Running realistic_flow.yaml on https://http://127.0.0.1:8080/tukano-1
+Error: 'artillery' is not recognized as an internal or external command,
+operable program or batch file.
+
+
+==================================================
+
+Running user_delete.yaml on https://http://127.0.0.1:8080/tukano-1
+Error: 'artillery' is not recognized as an internal or external command,
+operable program or batch file.
+
+
+==================================================
+
