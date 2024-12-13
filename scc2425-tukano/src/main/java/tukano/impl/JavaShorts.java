@@ -153,7 +153,7 @@ public class JavaShorts implements Shorts {
 	public Result<List<String>> getShorts(String userId) {
 		Log.info(() -> format("getShorts : userId = %s\n", userId));
 
-		var query = format("SELECT s.shortId FROM Short s WHERE s.id = l.id LIKE '%%short:%%%%%s%%'", userId);
+		var query = format("SELECT s.shortId FROM Short s WHERE s.id LIKE '%%short:%%%%%s%%'", userId);
 		return errorOrValue(okUser(userId), DB.sql(query, String.class));
 	}
 
