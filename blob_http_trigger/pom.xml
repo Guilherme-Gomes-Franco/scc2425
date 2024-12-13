@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>war</packaging>
     <groupId>function</groupId>
-    <artifactId>blob_http_trigger</artifactId>
+    <artifactId>blob-http-trigger</artifactId>
     <version>1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
+        <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>

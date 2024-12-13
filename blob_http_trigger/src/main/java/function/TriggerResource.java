@@ -2,29 +2,28 @@ package function;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.Map;
 
-
 /**
  * Class with control endpoints.
  */
 @Path("/update_views")
 public class TriggerResource {
-    /**
-     * This methods just prints a string. It may be useful to check if the current
-     * version is running on Azure.
-     */
+
+    @Path("/")
+    @GET
+    public String update_views(){
+        throw new WebApplicationException("You got here", Response.Status.OK);
+    }
+
     @Path("/")
     @POST
-    public void version(@QueryParam("id") String id, @QueryParam("token") String token) {
+    public void update_views(@QueryParam("id") String id, @QueryParam("token") String token) {
 
         if (id == null || token == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

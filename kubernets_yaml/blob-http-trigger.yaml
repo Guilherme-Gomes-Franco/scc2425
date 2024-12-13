@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blob-http-trigger
-    labels:
+  labels:
     app: blob-http-trigger
 spec:
   replicas: 1

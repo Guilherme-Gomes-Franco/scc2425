@@ -30,5 +30,5 @@ kubectl apply -f blob-http-trigger.yaml
 
 kubectl wait --for=condition=ready pod -l app=scc2425-webapp
 
-kubectl port-forward svc/scc2425-webapp-service 8080:80
+#kubectl port-forward svc/scc2425-webapp-service 8080:80
 #kubectl rollout restart deployment/scc2425-webapp
