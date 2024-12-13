@@ -56,7 +56,7 @@ public class JavaBlobs implements Blobs {
 	}
 
 	@Override
-	public Result<byte[]> download(Cookie cookie, String blobId, String token) {
+	public Result<byte[]> download(/*Cookie cookie, */String blobId, String token) {
 		Log.info(() -> format("download : blobId = %s, token=%s\n", blobId, token));
 
 		if (!validBlobId(blobId, token))
@@ -64,7 +64,7 @@ public class JavaBlobs implements Blobs {
 
 		var res = storage.read(toPath(blobId));
 		if (res.isOK())
-			updateViews(cookie.getValue(), blobId);
+			updateViews("ssss"/*cookie.getValue()*/, blobId);
 
 		return res;
 	}
