@@ -16,7 +16,7 @@ public class ControlResource
 
 	private static final String ADMIN = "admin";
 
-	/**
+/**
 	 * This methods just prints a string. It may be useful to check if the current 
 	 * version is running on Azure.
 	 */

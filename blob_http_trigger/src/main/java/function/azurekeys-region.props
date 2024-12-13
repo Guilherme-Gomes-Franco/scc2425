@@ -1,0 +1,6 @@
+REDIS_HOSTNAME=redis
+REDIS_PORT=6379
+
+POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-scc-2425
+POSTGRES_USER=citus
+POSTGRES_PASSWORD=Admin1234
