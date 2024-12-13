@@ -94,6 +94,7 @@ public class DockerFilesystemStorage implements BlobStorage {
     }
 
     private File toFile(String path) {
-        return new File(rootDir, path);
+        String sanitizedPath = path.replace(":", "_"); // Replace invalid characters
+        return new File(rootDir, sanitizedPath);
     }
 }

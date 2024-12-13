@@ -18,10 +18,15 @@ final public class IO {
 	public static void write( File out, byte[] data ) {
 		try {
 			System.out.println("WRITE>>>>" + out);
-			
-			Files.write( out.toPath(), data);
-		} catch( Exception x ) {
-			x.printStackTrace();
+
+			File parentDir = out.getParentFile();
+			if (parentDir != null && !parentDir.exists()) {
+				parentDir.mkdirs();
+			}
+
+			Files.write(out.toPath(), data);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
