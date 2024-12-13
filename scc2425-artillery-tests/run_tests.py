@@ -10,7 +10,7 @@ targets = [
     # "https://tukano-scc-nocache-postgres.azurewebsites.net/rest",
     # "https://tukano-scc-final-cosmos.azurewebsites.net/rest",
     # "https://tukano-scc-final-postgres.azurewebsites.net/rest"
-    "https://http://127.0.0.1:8080/tukano-1"
+    "http://127.0.0.1:8080/tukano-1/rest"
 ]
 
 target_description = [
@@ -66,7 +66,8 @@ def run_artillery(target, yaml_file, log_file):
 
     # Run the artillery command
     result = subprocess.run(
-        ["artillery", "run", yaml_file], shell=True, capture_output=True, text=True
+        #["artillery", "run", yaml_file], shell=True, capture_output=True, text=True
+        [f'artillery run {yaml_file}'], shell=True, capture_output=True, text=True
     )
 
     # Write output to log file
