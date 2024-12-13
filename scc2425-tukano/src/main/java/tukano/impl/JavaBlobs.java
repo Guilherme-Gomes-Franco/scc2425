@@ -63,8 +63,8 @@ public class JavaBlobs implements Blobs {
 			return error(FORBIDDEN);
 
 		var res = storage.read(toPath(blobId));
-		if (res.isOK())
-			updateViews("ssss"/*cookie.getValue()*/, blobId);
+		//if (res.isOK())
+		//	updateViews("ssss"/*cookie.getValue()*/, blobId);
 
 		return res;
 	}
