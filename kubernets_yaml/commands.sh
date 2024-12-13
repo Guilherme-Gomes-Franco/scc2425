@@ -1,8 +1,7 @@
 kubectl delete -n default deployment scc2425-webapp postgres redis blob-http-trigger
 kubectl delete pvc postgres-pvc redis-pvc media-pvc
-kubectl delete -n default configmap db-init-scripts
 kubectl delete -n default secret db-user-secret
-kubectl delete -n default service scc2425-webapp-service postgres redis kubernetes blob-http-trigger
+kubectl delete -n default service scc2425-webapp-service postgres redis kubernetes blob-http-trigger-service
 kubectl delete persistentvolume media-pv postgres-pv redis-pv
 
 kubectl create secret generic db-user-secret \

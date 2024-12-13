@@ -28,7 +28,7 @@ public class RestBlobsResource extends RestResource implements RestBlobs {
 	public byte[] download(Cookie cookie, String blobId, String token) {
 		Authentication.validateSession(cookie);
 
-		return super.resultOrThrow( impl.download( blobId, token ));
+		return super.resultOrThrow( impl.download( cookie, blobId, token ));
 	}
 
 	@Override

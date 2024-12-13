@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
+import jakarta.ws.rs.core.Cookie;
 import tukano.api.Blobs;
 import tukano.api.Result;
 import tukano.impl.rest.TukanoRestApplication;
@@ -55,7 +56,7 @@ public class JavaBlobs implements Blobs {
 	}
 
 	@Override
-	public Result<byte[]> download(String blobId, String token) {
+	public Result<byte[]> download(Cookie cookie, String blobId, String token) {
 		Log.info(() -> format("download : blobId = %s, token=%s\n", blobId, token));
 
 		if (!validBlobId(blobId, token))
@@ -63,7 +64,7 @@ public class JavaBlobs implements Blobs {
 
 		var res = storage.read(toPath(blobId));
 		if (res.isOK())
-			updateViews(blobId);
+			updateViews(cookie.getValue(), blobId);
 
 		return res;
 	}
@@ -100,10 +101,10 @@ public class JavaBlobs implements Blobs {
 		return baseURI + blobId;
 	}
 
-	public static void updateViews(String blobId) {
+	public static void updateViews(String token, String blobId) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				HttpURLConnection conn = getHttpURLConnection(blobId);
+				HttpURLConnection conn = getHttpURLConnection(token, blobId);
 
 				try (OutputStream os = conn.getOutputStream()) {
 					byte[] input = "".getBytes(StandardCharsets.UTF_8);
@@ -126,11 +127,11 @@ public class JavaBlobs implements Blobs {
 				});
 	}
 
-	private static HttpURLConnection getHttpURLConnection(String blobId) throws IOException {
+	private static HttpURLConnection getHttpURLConnection(String token, String blobId) throws IOException {
 		String database = DB.USE_POSTGRES ? "postgres" : "cosmos";
 
 		String urlString = String.format(
-				"https://%s.azurewebsites.net/api/update_views?id=%s&database=%s&code=%s",
+				"blob-http-trigger/rest/api/update_views?id=%s&database=%s&code=%s",
 				Props.get("FUNCTION_NAME"), blobId, database, Props.get("UPDATE_VIEWS_FUNCTION_CODE"));
 
 		URL url = new URL(urlString);

@@ -1,5 +1,7 @@
 package tukano.api;
 
+import jakarta.ws.rs.core.Cookie;
+
 /**
  * Interface of blob service for storing short videos media ...
  */
@@ -28,7 +30,7 @@ public interface Blobs {
 	 * @return (OK, bytes), if the blob exists;
 	 * 			 NOT_FOUND, if no blob matches the provided blobId
 	 */
-	Result<byte[]> download(String blobId, String token);
+	Result<byte[]> download(Cookie cookie, String blobId, String token);
 	
 	Result<Void> delete( String blobId, String token );
 	

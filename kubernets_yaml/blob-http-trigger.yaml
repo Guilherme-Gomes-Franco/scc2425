@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: blob-http-trigger
+    labels:
+    app: blob-http-trigger
 spec:
   replicas: 1
   selector:
@@ -21,17 +23,17 @@ spec:
         - name: POSTGRES_URL
           valueFrom:
             secretKeyRef:
-              name: db-config
+              name: db-user-secret
               key: POSTGRES_URL
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: db-config
+              name: db-user-secret
               key: POSTGRES_USER
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: db-config
+              name: db-user-secret
               key: POSTGRES_PASSWORD
         - name: REDIS_HOSTNAME
           value: redis-service
@@ -41,7 +43,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: blob-http-trigger
+  name: blob-http-trigger-service
 spec:
   selector:
     app: blob-http-trigger
