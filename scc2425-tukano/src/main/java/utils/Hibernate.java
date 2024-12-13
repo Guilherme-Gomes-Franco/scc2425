@@ -39,9 +39,14 @@ public class Hibernate {
 	 * 
 	 * @return
 	 */
-	synchronized public static Hibernate getInstance() {
-        if (instance == null)
-			instance = new Hibernate();
+	public static Hibernate getInstance() {
+		if (instance == null) {
+			synchronized (Hibernate.class) {
+				if (instance == null) {
+					instance = new Hibernate();
+				}
+			}
+		}
 		return instance;
 	}
 
