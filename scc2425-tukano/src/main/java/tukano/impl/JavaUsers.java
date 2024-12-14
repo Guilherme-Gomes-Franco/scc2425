@@ -80,17 +80,16 @@ public class JavaUsers implements Users {
 				e.printStackTrace();
 		}
 		Result<UserImp> res = validatedUserOrError(DB.getOne(userId, UserImp.class), pwd);
-		try {
-			if (res.isOK()) {
-				var jedis = RedisCache.getCachePool().getResource();
+		if (res.isOK()) {
+			try (var jedis = RedisCache.getCachePool().getResource()) {
 				jedis.setex(userId, 10, JSON.encode(res.value()));
+			} catch (Exception e) {
+				if (e.getMessage() != null && e.getMessage().contains("404")) {
+					//System.out.println("Error 404 detected in exception message.");
+				}
+				else
+					e.printStackTrace();
 			}
-		} catch (Exception e) {
-			if (e.getMessage() != null && e.getMessage().contains("404")) {
-				//System.out.println("Error 404 detected in exception message.");
-			}
-			else
-				e.printStackTrace();
 		}
 		return res;
 	}
