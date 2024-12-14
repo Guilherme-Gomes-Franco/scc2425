@@ -1,6 +1,5 @@
 package function;
 
-import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 
 import java.util.HashSet;
@@ -9,7 +8,6 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 
-@ApplicationPath("/api")
 public class API extends Application {
 
     private static Logger Log = Logger.getLogger(API.class.getName());
