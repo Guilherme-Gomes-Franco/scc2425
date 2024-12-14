@@ -14,8 +14,10 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import tukano.api.Result;
+import tukano.impl.JavaShorts;
 import utils.Hash;
 import utils.IO;
 import utils.Props;
@@ -23,6 +25,9 @@ import utils.Props;
 public class DockerFilesystemStorage implements BlobStorage {
     private final String rootDir;
     private static final int CHUNK_SIZE = 4096;
+
+    private static Logger Log = Logger.getLogger(DockerFilesystemStorage.class.getName());
+
 
     public DockerFilesystemStorage(String rootDir) {
         this.rootDir = rootDir != null ? rootDir : Props.get("BLOB_PATH");
@@ -83,10 +88,12 @@ public class DockerFilesystemStorage implements BlobStorage {
 
         try {
             File parentDir = toFile("");
-            File[] files = parentDir.listFiles((dir, name) -> name.startsWith(path));
+            File[] files = parentDir.listFiles((dir, name) -> name.startsWith("short_" + path));
 
             if (files != null) {
+                Log.info(() -> "Deleting " + files.length + " files");
                 for (File file : files) {
+                    Log.info(() -> "Deleting file: " + file.getName());
                     if (!file.delete()) {
                         return error(INTERNAL_ERROR);
                     }
