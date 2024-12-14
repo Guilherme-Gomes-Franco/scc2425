@@ -88,7 +88,10 @@ public class DockerFilesystemStorage implements BlobStorage {
 
         try {
             File parentDir = toFile("");
-            File[] files = parentDir.listFiles((dir, name) -> name.startsWith("short_" + path));
+
+            Log.info(() -> "Deleting files in " + parentDir.getAbsolutePath());
+
+            File[] files = parentDir.listFiles((dir, name) -> name.startsWith(path));
 
             if (files != null) {
                 Log.info(() -> "Deleting " + files.length + " files");
