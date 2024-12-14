@@ -81,27 +81,32 @@ public class TriggerResource {
     }
 
     private void updateOnCache(String shortId, int views) {
-        // Get the JSON string from Redis
-        String jsonObject = RedisCache.getCachePool().getResource().get(shortId);
 
-        if (jsonObject != null) {
-            // Define the type for Gson to convert to a Map
-            Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        try (var jedis = RedisCache.getCachePool().getResource()) {
+            // Get the JSON string from Redis
+            String jsonObject = jedis.get(shortId);
 
-            var gson = new Gson();
+            if (jsonObject != null) {
+                // Define the type for Gson to convert to a Map
+                Type type = new TypeToken<Map<String, Object>>(){}.getType();
 
-            // Deserialize the JSON string to a Map
-            Object obj = gson.fromJson(jsonObject, type);
+                var gson = new Gson();
 
-            // Update the totalViews in the Map
-            Map<String, Object> map = (Map<String, Object>) obj;
-            map.put("totalViews", views);
+                // Deserialize the JSON string to a Map
+                Object obj = gson.fromJson(jsonObject, type);
 
-            // Serialize the Map back to a JSON string
-            jsonObject = gson.toJson(map);
+                // Update the totalViews in the Map
+                Map<String, Object> map = (Map<String, Object>) obj;
+                map.put("totalViews", views);
 
-            // Update the JSON string in Redis
-            RedisCache.getCachePool().getResource().setex(shortId, 10, jsonObject);
+                // Serialize the Map back to a JSON string
+                jsonObject = gson.toJson(map);
+
+                // Update the JSON string in Redis
+                jedis.setex(shortId, 10, jsonObject);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
