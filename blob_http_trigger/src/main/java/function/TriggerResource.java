@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
+import jakarta.inject.Singleton;
 
 import java.lang.reflect.Type;
 import java.sql.*;
@@ -12,6 +13,7 @@ import java.util.Map;
 /**
  * Class with control endpoints.
  */
+@Singleton
 @Path("/update_views")
 public class TriggerResource {
 
@@ -29,8 +31,8 @@ public class TriggerResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        if(RedisCacheWrapper.getInstance().getSession(token) == null) {
-            throw new WebApplicationException("Please pass an id and database on the query string", Response.Status.UNAUTHORIZED);
+        if (!token.equals(Props.get("SECRET_TOKEN"))) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
 
         Connection conn = null;
