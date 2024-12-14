@@ -211,11 +211,17 @@ public class JavaShorts implements Shorts {
 
 		// Define queries for PostgreSQL and Cosmos DB
 		final var QUERY_POSTGRES = String.format("""
-            SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%short:%%%s%%'
-            UNION
-            SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE '%%following:%%%s%%' AND s.id LIKE '%%short:%%%s%%'
-            ORDER BY s.timestamp DESC
-            """, userId, userId, userId);
+			SELECT * FROM (
+				SELECT s.shortId, s.timestamp\s
+				FROM Short s\s
+				WHERE s.id LIKE '%%short:%%%s%%'
+				UNION
+				SELECT s.shortId, s.timestamp\s
+				FROM Short s\s
+				WHERE s.id LIKE '%%following:%%%s%%' AND s.id LIKE '%%short:%%%s%%'
+			) AS combined_results
+			ORDER BY combined_results.timestamp DESC
+		\t""", userId, userId, userId);
 
 		final var QUERY_COSMOS_1 = String.format("""
             SELECT s.shortId, s.timestamp FROM Short s WHERE s.id LIKE 'short:%s%%'
