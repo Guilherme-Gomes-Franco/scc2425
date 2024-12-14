@@ -56,15 +56,15 @@ public class JavaBlobs implements Blobs {
 	}
 
 	@Override
-	public Result<byte[]> download(/*Cookie cookie, */String blobId, String token) {
+	public Result<byte[]> download(String blobId, String token) {
 		Log.info(() -> format("download : blobId = %s, token=%s\n", blobId, token));
 
 		if (!validBlobId(blobId, token))
 			return error(FORBIDDEN);
 
 		var res = storage.read(toPath(blobId));
-		//if (res.isOK())
-		//	updateViews("ssss"/*cookie.getValue()*/, blobId);
+		if (res.isOK())
+			updateViews(blobId);
 
 		return res;
 	}
@@ -103,10 +103,10 @@ public class JavaBlobs implements Blobs {
 		return baseURI + blobId;
 	}
 
-	public static void updateViews(String token, String blobId) {
+	public static void updateViews(String blobId) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				HttpURLConnection conn = getHttpURLConnection(token, blobId);
+				HttpURLConnection conn = getHttpURLConnection(blobId);
 
 				try (OutputStream os = conn.getOutputStream()) {
 					byte[] input = "".getBytes(StandardCharsets.UTF_8);
@@ -129,12 +129,11 @@ public class JavaBlobs implements Blobs {
 				});
 	}
 
-	private static HttpURLConnection getHttpURLConnection(String token, String blobId) throws IOException {
-		String database = DB.USE_POSTGRES ? "postgres" : "cosmos";
+	private static HttpURLConnection getHttpURLConnection(String blobId) throws IOException {
 
 		String urlString = String.format(
-				"blob-http-trigger/rest/api/update_views?id=%s&database=%s&code=%s",
-				Props.get("FUNCTION_NAME"), blobId, database, Props.get("UPDATE_VIEWS_FUNCTION_CODE"));
+				"blob-http-trigger-1/rest/update_views?id=%s&token=%s",
+				blobId, Props.get("SECRET_TOKEN"));
 
 		URL url = new URL(urlString);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
