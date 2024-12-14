@@ -39,6 +39,11 @@ spec:
             secretKeyRef:
               name: db-user-secret
               key: DB_PASSWORD
+        - name: SECRET_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: SECRET_TOKEN
       volumes:
       - name: media-volume
         persistentVolumeClaim:
