@@ -77,19 +77,26 @@ public class DockerFilesystemStorage implements BlobStorage {
 
     @Override
     public Result<Void> delete(String path) {
-        if (path == null)
+        if (path == null || path.isEmpty()) {
             return error(BAD_REQUEST);
+        }
 
         try {
-            var file = toFile(path);
-            Files.walk(file.toPath())
-                    .sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-        } catch (IOException e) {
+            File parentDir = toFile("");
+            File[] files = parentDir.listFiles((dir, name) -> name.startsWith(path));
+
+            if (files != null) {
+                for (File file : files) {
+                    if (!file.delete()) {
+                        return error(INTERNAL_ERROR);
+                    }
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return error(INTERNAL_ERROR);
         }
+
         return ok();
     }
 
