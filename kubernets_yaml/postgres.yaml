@@ -32,8 +32,6 @@ spec:
               key: DB_PASSWORD
         - name: POSTGRES_USER
           value: "citus"
-        - name: POSTGRES_PASSWORD
-          value: "Admin1234"
         - name: POSTGRES_DB
           value: "postgres-scc-2425"
         - name: POSTGRES_ADMIN_USER
@@ -46,8 +44,6 @@ spec:
             secretKeyRef:
               name: db-user-secret
               key: POSTGRES_PASSWORD
-        - name: POSTGRES_DB
-          value: "postgres-scc-2425"
         volumeMounts:
         #- mountPath: /docker-entrypoint-initdb.d
         #  name: db-init-scripts

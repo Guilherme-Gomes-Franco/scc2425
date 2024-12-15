@@ -20,6 +20,11 @@ spec:
         ports:
         - containerPort: 8080
         env:
+        - name: SECRET_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: db-user-secret
+              key: SECRET_TOKEN
         - name: POSTGRES_URL
           valueFrom:
             secretKeyRef:
@@ -39,11 +44,6 @@ spec:
           value: redis-service
         - name: REDIS_PORT
           value: "6379"
-        - name: SECRET_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: db-user-secret
-              key: SECRET_TOKEN
 ---
 apiVersion: v1
 kind: Service
@@ -56,4 +56,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP
