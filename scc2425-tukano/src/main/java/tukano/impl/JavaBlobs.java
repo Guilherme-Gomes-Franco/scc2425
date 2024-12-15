@@ -132,7 +132,7 @@ public class JavaBlobs implements Blobs {
 	private static HttpURLConnection getHttpURLConnection(String blobId) throws IOException {
 
 		String urlString = String.format(
-				"http://blob-http-trigger-1/rest/update_views?id=%s&token=%s",
+				"http://blob-http-trigger/blob-http-trigger-1/rest/update_views?id=%s&token=%s",
 				blobId, Props.get("SECRET_TOKEN"));
 
 		URL url = new URL(urlString);
