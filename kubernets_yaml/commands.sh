@@ -10,6 +10,7 @@ kubectl create secret generic db-user-secret \
   --from-literal=POSTGRES_USER=citus \
   --from-literal=POSTGRES_PASSWORD=Admin1234 \
   --from-literal=POSTGRES_URL=jdbc:postgresql://postgres:5432/postgres-scc-2425 \
+  --from-literal=SECRET_TOKEN=secret
 
 kubectl apply -f postgres-pvc.yaml
 kubectl apply -f postgres.yaml
