@@ -9,6 +9,9 @@ import jakarta.inject.Singleton;
 import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import static java.lang.String.format;
 
 /**
  * Class with control endpoints.
@@ -16,6 +19,8 @@ import java.util.Map;
 @Singleton
 @Path("/update_views")
 public class TriggerResource {
+
+    private static Logger Log = Logger.getLogger(API.class.getName());
 
     @Path("/")
     @GET
@@ -26,6 +31,8 @@ public class TriggerResource {
     @Path("/")
     @POST
     public void update_views(@QueryParam("id") String id, @QueryParam("token") String token) {
+
+        Log.info(() -> format("update_views : id = %s, token = %s\n", id, token));
 
         if (id == null || token == null) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
