@@ -122,9 +122,9 @@ public class JavaBlobs implements Blobs {
 				e.printStackTrace();
 			}
 		})
-				.thenAccept(result -> System.out.println("updateViews completed successfully"))
+				.thenAccept(result -> Log.info(() -> format("Successfully updatedViews : blobId = %s\n", blobId)))
 				.exceptionally(ex -> {
-					System.err.println("Failed to execute updateViews: " + ex.getMessage());
+					Log.info(() -> format("Failed to execute updateViews : error = %s\n", ex.getMessage()));
 					return null;
 				});
 	}
@@ -132,7 +132,7 @@ public class JavaBlobs implements Blobs {
 	private static HttpURLConnection getHttpURLConnection(String blobId) throws IOException {
 
 		String urlString = String.format(
-				"blob-http-trigger-1/rest/update_views?id=%s&token=%s",
+				"http://blob-http-trigger/blob-http-trigger-1/rest/update_views?id=%s&token=%s",
 				blobId, Props.get("SECRET_TOKEN"));
 
 		URL url = new URL(urlString);

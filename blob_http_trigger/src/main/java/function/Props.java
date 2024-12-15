@@ -1,8 +1,5 @@
 package function;
 
-import java.io.InputStreamReader;
-import java.util.Properties;
-
 public class Props {
 
 	public static String get(String key){
@@ -21,17 +18,12 @@ public class Props {
 		return JSON.decode(val, clazz);
 	}
 
-	public static void load( String resourceFile ) {
-		try( var in = Props.class.getClassLoader().getResourceAsStream(resourceFile) ) {
-			var reader = new InputStreamReader(in);
-			var props = new Properties();
-			props.load(reader);
-			props.forEach( (k,v) -> System.setProperty(k.toString(), v.toString()));
+	public static void load() {
+		try {
 			System.getenv().forEach( System::setProperty );
 		}
 		catch( Exception x  ) {
 			x.printStackTrace();
 		}
-
 	}
 }

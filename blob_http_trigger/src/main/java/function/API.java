@@ -13,7 +13,8 @@ public class API extends Application {
     private static Logger Log = Logger.getLogger(API.class.getName());
 
     public API(){
-        Log.info(() -> format("Server Initialized at:  %s\n", String.format("http://%s:%s/rest", IP.hostname(), 8080)));
+        Log.info(() -> format("Server Initialized at:  %s\n", String.format("http://%s:%s/rest", IP.hostname(), IP.hostAddress())));
+        Props.load();
     }
 
     @Override
