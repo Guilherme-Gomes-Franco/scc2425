@@ -1,0 +1,64 @@
+Running user_register.yaml on https://http://127.0.0.1:8080/tukano-1/rest
+
+        ___         __  _ ____
+  _____/   |  _____/ /_(_) / /__  _______  __ ___
+ /____/ /| | / ___/ __/ / / / _ \/ ___/ / / /____/
+/____/ ___ |/ /  / /_/ / / /  __/ /  / /_/ /____/
+    /_/  |_/_/   \__/_/_/_/\___/_/   \__  /
+                                    /____/
+
+Cloud-scale load testing. https://www.artillery.io
+
+VERSION
+  artillery/2.0.21 darwin-arm64 node-v23.1.0
+
+USAGE
+  $ artillery [COMMAND]
+
+COMMANDS
+  dino         here be dinosaurs
+  help         Display help for artillery.
+  quick        run a simple test without writing a test script
+  report       generate a HTML report from a JSON log produced with artillery
+               run
+  run          run a test script locally or on AWS Lambda
+  run-aci      launch a test using Azure ACI
+  run-ecs      launch a test using AWS ECS/Fargate
+  run-fargate  launch a test using AWS ECS/Fargate
+  run-lambda   launch a test using AWS Lambda
+
+
+==================================================
+
+Running upload_shorts.yaml on https://http://127.0.0.1:8080/tukano-1/rest
+
+        ___         __  _ ____
+  _____/   |  _____/ /_(_) / /__  _______  __ ___
+ /____/ /| | / ___/ __/ / / / _ \/ ___/ / / /____/
+/____/ ___ |/ /  / /_/ / / /  __/ /  / /_/ /____/
+    /_/  |_/_/   \__/_/_/_/\___/_/   \__  /
+                                    /____/
+
+Cloud-scale load testing. https://www.artillery.io
+
+VERSION
+  artillery/2.0.21 darwin-arm64 node-v23.1.0
+
+USAGE
+  $ artillery [COMMAND]
+
+COMMANDS
+  dino         here be dinosaurs
+  help         Display help for artillery.
+  quick        run a simple test without writing a test script
+  report       generate a HTML report from a JSON log produced with artillery
+               run
+  run          run a test script locally or on AWS Lambda
+  run-aci      launch a test using Azure ACI
+  run-ecs      launch a test using AWS ECS/Fargate
+  run-fargate  launch a test using AWS ECS/Fargate
+  run-lambda   launch a test using AWS Lambda
+
+
+==================================================
+

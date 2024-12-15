@@ -1,6 +1,7 @@
 import subprocess
 import os
 from datetime import datetime
+from time import sleep
 
 # List of targets
 targets = [
@@ -10,7 +11,7 @@ targets = [
     # "https://tukano-scc-nocache-postgres.azurewebsites.net/rest",
     # "https://tukano-scc-final-cosmos.azurewebsites.net/rest",
     # "https://tukano-scc-final-postgres.azurewebsites.net/rest"
-    "http://127.0.0.1:8080/tukano-1/rest"
+    "http://127.0.0.1/tukano-1/rest"
 ]
 
 target_description = [
