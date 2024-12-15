@@ -1,5 +1,6 @@
 config:
   target: "{{ $env.TARGET_URL }}"
+ #target: "http://127.0.0.1/tukano-1/rest"
   plugins:
     metrics-by-endpoint: {} # Used to get metrics for each endpoint individually.
   processor: ./test-utils.js
@@ -42,7 +43,6 @@ scenarios:
       - post:
           beforeRequest: "uploadBlobBody"
           url: "/blobs/{{ blobUrl }}"
-            
 
   - name: "Download short"
     weight: 100
